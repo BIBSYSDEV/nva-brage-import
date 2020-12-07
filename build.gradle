@@ -1,0 +1,91 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'checkstyle'
+    id 'pmd'
+    id 'nebula.lint' version '16.9.1'
+}
+
+allprojects {
+
+    apply plugin: 'nebula.lint'
+
+    gradleLint {
+        rules = ['unused-dependency']
+    }
+
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+}
+
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+    apply plugin: 'checkstyle'
+    apply plugin: 'pmd'
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    }
+
+    test {
+
+        useJUnitPlatform()
+        failFast = false
+        testLogging {
+            events = ['skipped', 'passed', 'failed']
+        }
+        finalizedBy jacocoTestReport
+
+        jacocoTestReport {
+            reports {
+                xml.enabled true
+            }
+        }
+
+        pmd {
+            ruleSetConfig = rootProject.resources.text.fromFile('config/pmd/ruleset.xml')
+            ruleSets = []
+            ignoreFailures false
+        }
+
+        checkstyle {
+            configFile = rootProject.resources.text.fromFile('config/checkstyle/checkstyle.xml').asFile()
+            showViolations true
+        }
+
+        tasks.withType(Checkstyle) {
+            reports {
+                xml.enabled false
+                html.enabled true
+                html.stylesheet = rootProject.resources.text.fromFile('config/checkstyle/checkstyle-simple.xsl')
+            }
+        }
+
+        check.dependsOn(jacocoTestCoverageVerification)
+        jacocoTestCoverageVerification.dependsOn(jacocoTestReport)
+
+        jacocoTestCoverageVerification {
+            violationRules {
+                rule {
+                    limit {
+                        counter = 'METHOD'
+                        value = 'COVEREDRATIO'
+                        minimum = 1.000
+                    }
+                }
+                rule {
+                    limit {
+                        counter = 'CLASS'
+                        value = 'COVEREDRATIO'
+                        minimum = 1.000
+                    }
+                }
+            }
+        }
+    }
+}
