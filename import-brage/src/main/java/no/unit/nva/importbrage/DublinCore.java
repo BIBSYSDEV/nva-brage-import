@@ -10,10 +10,11 @@ import java.util.List;
 
 @JacksonXmlRootElement(localName = "dublin_core")
 public class DublinCore implements Serializable {
+    @SuppressWarnings("PMD.UnusedPrivateField")
     @JacksonXmlProperty(isAttribute = true, localName = "schema")
     private String schema;
 
-    @JacksonXmlElementWrapper(useWrapping=false)
+    @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "dcvalue")
     private List<DcValue> dcValues;
 
