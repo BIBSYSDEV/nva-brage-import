@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class XmlImportTest {
 
     public static final String OVERCOMPLETE_EXAMPLE = "/overcomplete_example.xml";
-    public static final Set<String> LANGUAGE_VALUES = Set.of("*", "en", "en_US");
 
     @Test
     void xmlImportLoadsData() throws IOException {
@@ -26,9 +25,5 @@ class XmlImportTest {
     private void testContributor(BrageContributor value) {
         assertNotNull(value.getContributorType());
         assertNotNull(value.getValue());
-    }
-
-    private boolean isNullOrDefaultValue(DcValue value) {
-        return isNull(value.getLanguage()) || LANGUAGE_VALUES.contains(value.getLanguage());
     }
 }
