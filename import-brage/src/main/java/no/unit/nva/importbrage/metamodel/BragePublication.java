@@ -17,6 +17,10 @@ public class BragePublication {
         return contributors;
     }
 
+    /**
+     * Add a single contributor.
+     * @param brageContributor a contributor.
+     */
     public void addContributor(BrageContributor brageContributor) {
         if (isNull(contributors)) {
             contributors = new ArrayList<>();

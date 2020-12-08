@@ -1,5 +1,7 @@
 package no.unit.nva.importbrage.metamodel;
 
+import no.unit.nva.importbrage.DcValue;
+
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -25,6 +27,10 @@ public class BrageCoverage {
     public BrageCoverage(CoverageType type, String value) {
         this.type = type;
         this.value = value;
+    }
+
+    public BrageCoverage(DcValue value) {
+        this(value.getQualifier(), value.getValue());
     }
 
     public CoverageType getType() {

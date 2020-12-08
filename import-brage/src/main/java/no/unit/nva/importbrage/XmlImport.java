@@ -32,13 +32,13 @@ public final class XmlImport {
         return bragePublication;
     }
 
-    public static void updateBragePublication(DcValue value, BragePublication publication) {
+    private static void updateBragePublication(DcValue value, BragePublication publication) {
         var element = value.getElement();
         if (CONTRIBUTOR.equals(element)) {
-            publication.addContributor(new BrageContributor(value.getQualifier(), value.getValue()));
+            publication.addContributor(new BrageContributor(value));
         }
         if (COVERAGE.equals(element)) {
-            publication.setCoverage(new BrageCoverage(value.getValue(), value.getValue()));
+            publication.setCoverage(new BrageCoverage(value));
         }
     }
 }
