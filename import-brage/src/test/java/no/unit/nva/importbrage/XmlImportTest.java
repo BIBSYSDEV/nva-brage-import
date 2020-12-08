@@ -1,6 +1,7 @@
 package no.unit.nva.importbrage;
 
 
+import no.unit.nva.importbrage.metamodel.BrageContributor;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -18,16 +19,13 @@ class XmlImportTest {
 
     @Test
     void xmlImportLoadsData() throws IOException {
-        var dublinCore = XmlImport.map(new File(getClass().getResource(OVERCOMPLETE_EXAMPLE).getFile()));
-        var values = dublinCore.getDcValues();
-        values.forEach(this::testDcValue);
+        var contributors = XmlImport.map(new File(getClass().getResource(OVERCOMPLETE_EXAMPLE).getFile()));
+        contributors.forEach(this::testContributor);
     }
 
-    private void testDcValue(DcValue value) {
+    private void testContributor(BrageContributor value) {
+        assertNotNull(value.getContributorType());
         assertNotNull(value.getValue());
-        assertNotNull(value.getElement());
-        assertNotNull(value.getQualifier());
-        assertTrue(isNullOrDefaultValue(value));
     }
 
     private boolean isNullOrDefaultValue(DcValue value) {
