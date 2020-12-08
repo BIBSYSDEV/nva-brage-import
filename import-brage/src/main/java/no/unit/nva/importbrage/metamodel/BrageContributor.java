@@ -14,14 +14,14 @@ public class BrageContributor {
 
       Values according to:
 
-          dc.contributor	            A person, organization, or service responsible for the content of the resource.
+          dc.contributor                A person, organization, or service responsible for the content of the resource.
                                         Catch-all for unspecified contributors.
-          dc.contributor.advisor	    Use primarily for thesis advisor.
-          dc.contributor.author	        Use for author.
-          dc.contributor.department	    The department where an item was created (used for import from DiVA).
-          dc.contributor.editor	        Use for editor.
-          dc.contributor.illustrator	Use for illustrator.
-          dc.contributor.orcid	        Use for Orcid identifier of a contributor
+          dc.contributor.advisor        Use primarily for thesis advisor.
+          dc.contributor.author         Use for author.
+          dc.contributor.department     The department where an item was created (used for import from DiVA).
+          dc.contributor.editor         Use for editor.
+          dc.contributor.illustrator    Use for illustrator.
+          dc.contributor.orcid          Use for Orcid identifier of a contributor
           dc.contributor.other
      */
 
@@ -65,6 +65,11 @@ public class BrageContributor {
             this.typeName = typeName;
         }
 
+        /**
+         * Get the equivalent ContributorType by its string representation.
+         * @param typeName A string of a ContributorType.
+         * @return A corresponding ContributorType
+         */
         public static ContributorType getTypeByName(String typeName) {
             return Arrays.stream(values())
                     .filter(value -> value.getTypeName().equals(typeName.toLowerCase(Locale.ROOT)))

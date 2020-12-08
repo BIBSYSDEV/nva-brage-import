@@ -18,6 +18,12 @@ public final class XmlImport {
 
     }
 
+    /**
+     * Returns a list of contributors from a Brage qualified Dublin Core xml export.
+     * @param file An XML file.
+     * @return A list of contributor objects.
+     * @throws IOException If the file cannot be found.
+     */
     public static List<BrageContributor> map(File file) throws IOException {
         var dublinCore = objectMapper.readValue(file, DublinCore.class);
         return dublinCore.getDcValues().stream()
