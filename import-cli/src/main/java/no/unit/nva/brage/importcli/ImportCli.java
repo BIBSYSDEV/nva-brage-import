@@ -1,5 +1,6 @@
 package no.unit.nva.brage.importcli;
 
+import no.unit.nva.brage.importcli.utils.JacocoGenerated;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -17,8 +18,9 @@ public class ImportCli implements Callable<Integer> {
     private File output;
 
     @CommandLine.Spec
-    CommandLine.Model.CommandSpec commandSpec;
+    protected CommandLine.Model.CommandSpec commandSpec;
 
+    @JacocoGenerated
     public static void main(String[] args) {
         int exitCode = new CommandLine(new ImportCli()).execute(args);
         System.exit(exitCode);
@@ -26,6 +28,7 @@ public class ImportCli implements Callable<Integer> {
 
     @Override
     public Integer call() {
+        System.out.println("Initializing import");
         if (!input.exists()) {
             commandSpec.commandLine().getErr().printf(MISSING_FILE_TEMPLATE, input);
             return 1;
@@ -34,6 +37,7 @@ public class ImportCli implements Callable<Integer> {
             commandSpec.commandLine().getErr().printf(MISSING_FILE_TEMPLATE, output);
             return 1;
         }
+
         return 0;
     }
 }
