@@ -47,7 +47,7 @@ public class TestCli {
 
     @Test
     void importCliTakesInputFileArgumentAndOutputFolderArgument() throws IOException {
-        String inputFileArg = getInputOptionForExistingFile();
+        String inputFileArg = generateTemporaryFileReturningArgumentWithFilePath();
         var outputDirectoryArg = getOutputOptionForExistingDirectory();
         int exitCode = commandLine.execute(inputFileArg, outputDirectoryArg);
         assertThat(exitCode, equalTo(SUCCESS));
@@ -66,7 +66,7 @@ public class TestCli {
 
     @Test
     void importCliReportsMissingOutputDirectory() throws IOException {
-        String inputFileArg = getInputOptionForExistingFile();
+        String inputFileArg = generateTemporaryFileReturningArgumentWithFilePath();
         var outputDirectoryArg = OUTPUT_PREFIX + NON_EXISTING_DIRECTORY;
         int exitCode = commandLine.execute(inputFileArg, outputDirectoryArg);
         assertThat(exitCode, equalTo(ERROR));
@@ -74,7 +74,7 @@ public class TestCli {
         assertThat(systemErr.toString(), containsString(expected));
     }
 
-    private String getInputOptionForExistingFile() throws IOException {
+    private String generateTemporaryFileReturningArgumentWithFilePath() throws IOException {
         var temporaryFile = new File(temporaryInputDirectory, FILE_NAME);
         var lines = Arrays.asList("<begin>", "middle", "</begin>");
         Files.write(temporaryFile.toPath(), lines);
