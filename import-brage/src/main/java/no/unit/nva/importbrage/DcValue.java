@@ -7,7 +7,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
-
+@SuppressWarnings("PMD.UnusedPrivateField")
 @JacksonXmlRootElement(localName = "dcvalue")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DcValue {
@@ -29,27 +29,7 @@ public class DcValue {
         return qualifier;
     }
 
-    public String getLanguage() {
-        return language;
-    }
-
     public String getValue() {
         return value;
-    }
-
-    public void setElement(String element) {
-        this.element = element;
-    }
-
-    public void setQualifier(String qualifier) {
-        this.qualifier = qualifier;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 }
