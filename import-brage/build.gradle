@@ -13,7 +13,7 @@ dependencies {
     implementation group: 'jakarta.xml.bind', name: 'jakarta.xml.bind-api', version: '2.3.2'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: jacksonVersion
-    compileClasspath group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
+    compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
