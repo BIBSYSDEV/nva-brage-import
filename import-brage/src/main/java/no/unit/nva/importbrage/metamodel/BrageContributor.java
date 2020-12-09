@@ -25,8 +25,8 @@ public class BrageContributor {
           dc.contributor.other
      */
 
-    private ContributorType contributorType;
-    private String value;
+    private final ContributorType contributorType;
+    private final String value;
 
 
     public BrageContributor(DcValue value) {
