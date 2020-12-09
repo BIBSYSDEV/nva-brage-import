@@ -7,7 +7,7 @@ import static java.util.Objects.isNull;
 
 public class BragePublication {
     private List<BrageContributor> contributors;
-    private BrageCoverage coverage;
+    private List<BrageCoverage> coverage;
     private List<BrageDate> dates;
 
     public BragePublication() {
@@ -29,12 +29,19 @@ public class BragePublication {
         contributors.add(brageContributor);
     }
 
-    public void setCoverage(BrageCoverage brageCoverage) {
-        this.coverage = brageCoverage;
+    public List<BrageCoverage> getCoverage() {
+        return coverage;
     }
 
-    public BrageCoverage getCoverage() {
-        return coverage;
+    /**
+     * Add a single coverage statement.
+     * @param brageCoverage A coverage statement.
+     */
+    public void addCoverage(BrageCoverage brageCoverage) {
+        if (isNull(coverage)) {
+            coverage = new ArrayList<>();
+        }
+        coverage.add(brageCoverage);
     }
 
     /**

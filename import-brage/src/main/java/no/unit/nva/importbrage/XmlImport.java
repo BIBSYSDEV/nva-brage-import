@@ -40,7 +40,7 @@ public final class XmlImport {
             publication.addContributor(new BrageContributor(value));
         }
         if (COVERAGE.equals(element)) {
-            publication.setCoverage(new BrageCoverage(value));
+            publication.addCoverage(new BrageCoverage(value));
         }
         if (DATE.equals(element)) {
             publication.setDate(new BrageDate(value));

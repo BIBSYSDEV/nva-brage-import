@@ -19,7 +19,7 @@ class XmlImportTest {
     void xmlImportLoadsData() throws IOException {
         var publication = XmlImport.map(new File(getClass().getResource(OVERCOMPLETE_EXAMPLE).getFile()));
         publication.getContributors().forEach(this::testContributor);
-        testCoverage(publication.getCoverage());
+        publication.getCoverage().forEach(this::testCoverage);
         publication.getDates().forEach(this::testDate);
     }
 
