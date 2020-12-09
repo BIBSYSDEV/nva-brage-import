@@ -1,19 +1,9 @@
-plugins {
-    id 'java'
-}
-
 group 'no.unit.nva.importcli'
 version '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
+    implementation group: 'info.picocli', name: 'picocli', version: '4.5.2'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-}
-
-test {
-    useJUnitPlatform()
 }
