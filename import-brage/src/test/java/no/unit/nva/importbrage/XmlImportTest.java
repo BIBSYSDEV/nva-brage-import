@@ -2,6 +2,7 @@ package no.unit.nva.importbrage;
 
 
 import no.unit.nva.importbrage.metamodel.BrageContributor;
+import no.unit.nva.importbrage.metamodel.BrageCoverage;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -15,8 +16,14 @@ class XmlImportTest {
 
     @Test
     void xmlImportLoadsData() throws IOException {
-        var contributors = XmlImport.map(new File(getClass().getResource(OVERCOMPLETE_EXAMPLE).getFile()));
-        contributors.forEach(this::testContributor);
+        var publication = XmlImport.map(new File(getClass().getResource(OVERCOMPLETE_EXAMPLE).getFile()));
+        publication.getContributors().forEach(this::testContributor);
+        testCoverage(publication.getCoverage());
+    }
+
+    private void testCoverage(BrageCoverage coverage) {
+        assertNotNull(coverage.getType());
+        assertNotNull(coverage.getValue());
     }
 
     private void testContributor(BrageContributor value) {

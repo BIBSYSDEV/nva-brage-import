@@ -3,16 +3,17 @@ package no.unit.nva.importbrage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import no.unit.nva.importbrage.metamodel.BrageContributor;
+import no.unit.nva.importbrage.metamodel.BrageCoverage;
+import no.unit.nva.importbrage.metamodel.BragePublication;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public final class XmlImport {
 
     private static final ObjectMapper objectMapper = new XmlMapper();
     public static final String CONTRIBUTOR = "contributor";
+    public static final String COVERAGE = "coverage";
 
     private XmlImport() {
 
@@ -24,11 +25,20 @@ public final class XmlImport {
      * @return A list of contributor objects.
      * @throws IOException If the file cannot be found.
      */
-    public static List<BrageContributor> map(File file) throws IOException {
+    public static BragePublication map(File file) throws IOException {
         var dublinCore = objectMapper.readValue(file, DublinCore.class);
-        return dublinCore.getDcValues().stream()
-                .filter(value -> value.getElement().equals(CONTRIBUTOR))
-                .map(BrageContributor::new)
-                .collect(Collectors.toList());
+        var bragePublication = new BragePublication();
+        dublinCore.getDcValues().forEach(value -> updateBragePublication(value, bragePublication));
+        return bragePublication;
+    }
+
+    private static void updateBragePublication(DcValue value, BragePublication publication) {
+        var element = value.getElement();
+        if (CONTRIBUTOR.equals(element)) {
+            publication.addContributor(new BrageContributor(value));
+        }
+        if (COVERAGE.equals(element)) {
+            publication.setCoverage(new BrageCoverage(value));
+        }
     }
 }
