@@ -3,6 +3,7 @@ package no.unit.nva.importbrage;
 
 import no.unit.nva.importbrage.metamodel.BrageContributor;
 import no.unit.nva.importbrage.metamodel.BrageCoverage;
+import no.unit.nva.importbrage.metamodel.BrageDate;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -19,6 +20,7 @@ class XmlImportTest {
         var publication = XmlImport.map(new File(getClass().getResource(OVERCOMPLETE_EXAMPLE).getFile()));
         publication.getContributors().forEach(this::testContributor);
         testCoverage(publication.getCoverage());
+        publication.getDates().forEach(this::testDate);
     }
 
     private void testCoverage(BrageCoverage coverage) {
@@ -26,8 +28,13 @@ class XmlImportTest {
         assertNotNull(coverage.getValue());
     }
 
-    private void testContributor(BrageContributor value) {
-        assertNotNull(value.getContributorType());
-        assertNotNull(value.getValue());
+    private void testContributor(BrageContributor contributor) {
+        assertNotNull(contributor.getContributorType());
+        assertNotNull(contributor.getValue());
+    }
+
+    private void testDate(BrageDate date) {
+        assertNotNull(date.getDateType());
+        assertNotNull(date.getvalue());
     }
 }

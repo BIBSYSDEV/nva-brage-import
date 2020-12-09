@@ -8,6 +8,7 @@ import static java.util.Objects.isNull;
 public class BragePublication {
     private List<BrageContributor> contributors;
     private BrageCoverage coverage;
+    private List<BrageDate> dates;
 
     public BragePublication() {
 
@@ -34,5 +35,20 @@ public class BragePublication {
 
     public BrageCoverage getCoverage() {
         return coverage;
+    }
+
+    /**
+     * Add a single date.
+     * @param brageDate A date.
+     */
+    public void setDate(BrageDate brageDate) {
+        if (isNull(dates)) {
+            dates = new ArrayList<>();
+        }
+        dates.add(brageDate);
+    }
+
+    public List<BrageDate> getDates() {
+        return this.dates;
     }
 }
