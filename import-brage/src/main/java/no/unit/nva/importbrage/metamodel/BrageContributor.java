@@ -1,7 +1,6 @@
 package no.unit.nva.importbrage.metamodel;
 
 import no.unit.nva.importbrage.DcValue;
-import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -25,8 +24,8 @@ public class BrageContributor {
           dc.contributor.other
      */
 
-    private ContributorType contributorType;
-    private String value;
+    private final ContributorType contributorType;
+    private final String value;
 
 
     public BrageContributor(DcValue value) {
@@ -34,7 +33,7 @@ public class BrageContributor {
     }
 
     public BrageContributor(String qualifier, String value) {
-        this(ContributorType.getTypeByName(qualifier), StringEscapeUtils.unescapeHtml4(value));
+        this(ContributorType.getTypeByName(qualifier), value);
     }
 
     public BrageContributor(ContributorType contributorType, String value) {
