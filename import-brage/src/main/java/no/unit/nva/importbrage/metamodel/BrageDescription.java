@@ -1,6 +1,7 @@
 package no.unit.nva.importbrage.metamodel;
 
 import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.importbrage.metamodel.types.DescriptionType;
 import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;

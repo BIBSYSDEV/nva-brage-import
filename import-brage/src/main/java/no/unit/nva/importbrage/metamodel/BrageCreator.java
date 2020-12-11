@@ -2,6 +2,7 @@ package no.unit.nva.importbrage.metamodel;
 
 import no.unit.nva.importbrage.DcValue;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
+import no.unit.nva.importbrage.metamodel.types.CreatorType;
 import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;

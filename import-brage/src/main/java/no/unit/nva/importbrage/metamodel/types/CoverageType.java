@@ -1,4 +1,4 @@
-package no.unit.nva.importbrage.metamodel;
+package no.unit.nva.importbrage.metamodel.types;
 
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 
