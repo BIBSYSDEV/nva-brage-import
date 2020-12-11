@@ -47,7 +47,11 @@ public enum CoverageType {
         return () -> new InvalidQualifierException(COVERAGE, typeName, ALLOWED);
     }
 
-    private static String getAllowedValues() {
+    /**
+     * Generates a string representation of the allowed type values.
+     * @return A string representation of the allowed values.
+     */
+    public static String getAllowedValues() {
         return Arrays.stream(values())
                 .map(CoverageType::getTypeName)
                 .collect(joining(DELIMITER));

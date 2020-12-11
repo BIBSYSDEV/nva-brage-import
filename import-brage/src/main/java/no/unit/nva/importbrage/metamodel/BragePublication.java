@@ -14,6 +14,7 @@ public class BragePublication {
     private List<BrageDate> dates;
     private List<BrageIdentifier> identifiers;
     private List<BrageDescription> descriptions;
+    private List<Object> creators;
 
     public BragePublication() {
 
@@ -94,6 +95,17 @@ public class BragePublication {
         return descriptions;
     }
 
+    /**
+     * Adds a single creator.
+     * @param brageCreator A creator.
+     */
+    public void addCreator(BrageCreator brageCreator) {
+        if (isNull(creators)) {
+            creators = new ArrayList<>();
+        }
+        creators.add(brageCreator);
+    }
+
     @JacocoGenerated
     @Override
     public boolean equals(Object o) {
@@ -108,12 +120,14 @@ public class BragePublication {
                 && Objects.equals(getCoverage(), that.getCoverage())
                 && Objects.equals(getDates(), that.getDates())
                 && Objects.equals(getIdentifiers(), that.getIdentifiers())
-                && Objects.equals(getDescriptions(), that.getDescriptions());
+                && Objects.equals(getDescriptions(), that.getDescriptions())
+                && Objects.equals(creators, that.creators);
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getContributors(), getCoverage(), getDates(), getIdentifiers(), getDescriptions());
+        return Objects.hash(getContributors(), getCoverage(), getDates(),
+                getIdentifiers(), getDescriptions(), creators);
     }
 }

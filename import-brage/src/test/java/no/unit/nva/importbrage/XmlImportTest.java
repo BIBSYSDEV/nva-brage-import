@@ -5,15 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import no.unit.nva.importbrage.metamodel.BrageContributor;
 import no.unit.nva.importbrage.metamodel.BrageCoverage;
+import no.unit.nva.importbrage.metamodel.BrageCreator;
 import no.unit.nva.importbrage.metamodel.BrageDate;
 import no.unit.nva.importbrage.metamodel.BrageDescription;
 import no.unit.nva.importbrage.metamodel.BrageIdentifier;
 import no.unit.nva.importbrage.metamodel.BragePublication;
 import no.unit.nva.importbrage.metamodel.ContributorType;
 import no.unit.nva.importbrage.metamodel.CoverageType;
+import no.unit.nva.importbrage.metamodel.CreatorType;
 import no.unit.nva.importbrage.metamodel.DateType;
 import no.unit.nva.importbrage.metamodel.DescriptionType;
 import no.unit.nva.importbrage.metamodel.IdentifierType;
+import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import nva.commons.utils.log.LogUtils;
 import nva.commons.utils.log.TestAppender;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +32,9 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException.MESSAGE_TEMPLATE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
@@ -54,6 +59,9 @@ class XmlImportTest {
     public static final String DC = "dc";
     public static final String DESCRIPTION = "description";
     public static final String DESCRIPTION_STRING = "Something resembling a description!";
+    public static final String CREATOR = "creator";
+    public static final String DELIMITER = ", ";
+    public static final String NONSENSE = "nonsense";
     public static TestAppender logger;
     public static final ObjectMapper mapper = new XmlMapper();
 
@@ -70,6 +78,7 @@ class XmlImportTest {
         var testData = Map.of(
                 ContributorType.AUTHOR, RANDY_OLSON,
                 CoverageType.SPATIAL, NORWAY,
+                CreatorType.UNQUALIFIED, RANDY_OLSON,
                 DateType.ACCESSIONED, ANY_DATE,
                 IdentifierType.URI, EXAMPLE_URI,
                 DescriptionType.ABSTRACT, "A long descriptive text that stands as a description");
@@ -165,18 +174,22 @@ class XmlImportTest {
         var xmlImport = new XmlImport();
         var publication = xmlImport.map(file);
         assertNull(publication);
-        assertThat(xmlImport.getErrors().size(), is(equalTo(1)));
+        var actual = String.join(DELIMITER, xmlImport.getErrors());
+        String expectedMessage = String.format(MESSAGE_TEMPLATE, COVERAGE, type, CoverageType.getAllowedValues());
+        assertThat(actual, containsString(expectedMessage));
     }
 
     @Test
     void xmlImportReportsBragePublicationWhenCoverageQualifierIsUnknown() throws IOException {
-        var dublinCore = generateDublinCoreWithQualifierForElement(COVERAGE, "nonsense");
+        var dublinCore = generateDublinCoreWithQualifierForElement(COVERAGE, NONSENSE);
         var file = getTemporaryFile();
         writeXmlFile(file, dublinCore);
         var xmlImport = new XmlImport();
         var publication = xmlImport.map(file);
         assertNull(publication);
-        assertThat(xmlImport.getErrors().size(), is(equalTo(1)));
+        var actual = String.join(DELIMITER, xmlImport.getErrors());
+        String expectedMessage = String.format(MESSAGE_TEMPLATE, COVERAGE, NONSENSE, CoverageType.getAllowedValues());
+        assertThat(actual, containsString(expectedMessage));
     }
 
     @ParameterizedTest(name = "XmlImport allows Date qualified type {0}")
@@ -189,6 +202,30 @@ class XmlImportTest {
         var publication = xmlImport.map(file);
         assertNotNull(publication);
         assertThat(publication, is(equalTo(testPair.getValue())));
+    }
+
+    @Test
+    void xmlImportGeneratesBragePublicationWhenCreatorIsUnqualified() throws IOException {
+        var testPair = generateTestPair(Map.of(CreatorType.UNQUALIFIED, RANDY_OLSON));
+        var file = getTemporaryFile();
+        writeXmlFile(file, testPair.getKey());
+        var xmlImport = new XmlImport();
+        var publication = xmlImport.map(file);
+        assertNotNull(publication);
+        assertThat(publication, is(equalTo(testPair.getValue())));
+    }
+
+    @Test
+    void xmlImportReportsErrorsWhenCreatorIsQualified() throws IOException {
+        var testPair = generateDublinCoreWithQualifierForElement(CREATOR, NONSENSE);
+        var file = getTemporaryFile();
+        writeXmlFile(file, testPair);
+        var xmlImport = new XmlImport();
+        var publication = xmlImport.map(file);
+        assertNull(publication);
+        var actual = String.join(DELIMITER, xmlImport.getErrors());
+        var expected = String.format(MESSAGE_TEMPLATE, CREATOR, NONSENSE, CreatorType.getAllowedValues());
+        assertThat(actual, containsString(expected));
     }
 
     private DublinCore generateDublinCoreWithQualifierForElement(String element, String qualifier) {
@@ -210,7 +247,7 @@ class XmlImportTest {
 
     private DublinCore generateDcValuesWithUnknownType() {
         var dcValue = new DcValueBuilder()
-                .withElement("nonsense")
+                .withElement(NONSENSE)
                 .withQualifier("yet more nonsense")
                 .withLanguage(null)
                 .withValue("even more nonsense")
@@ -241,6 +278,12 @@ class XmlImportTest {
                 var coverageType = (CoverageType) type;
                 dcValues.add(generateDcValueForCoverage(coverageType, value));
                 publication.addCoverage(new BrageCoverage(coverageType, value));
+                return;
+            }
+            if (type instanceof CreatorType) {
+                var creatorType = (CreatorType) type;
+                dcValues.add(generateDcValueForCreator(creatorType, value));
+                publication.addCreator(new BrageCreator(creatorType, value));
                 return;
             }
             if (type instanceof DateType) {
@@ -284,6 +327,15 @@ class XmlImportTest {
                 .withElement(IDENTIFIER)
                 .withLanguage(EN_US)
                 .withQualifier(uriType.getTypeName())
+                .withValue(value)
+                .build();
+    }
+
+    private DcValue generateDcValueForCreator(CreatorType creatorType, String value) {
+        return new DcValueBuilder()
+                .withElement(CREATOR)
+                .withLanguage(EN_US)
+                .withQualifier(creatorType.getTypeName())
                 .withValue(value)
                 .build();
     }

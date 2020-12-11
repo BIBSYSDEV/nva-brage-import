@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import no.unit.nva.importbrage.metamodel.BrageContributor;
 import no.unit.nva.importbrage.metamodel.BrageCoverage;
+import no.unit.nva.importbrage.metamodel.BrageCreator;
 import no.unit.nva.importbrage.metamodel.BrageDate;
 import no.unit.nva.importbrage.metamodel.BrageDescription;
 import no.unit.nva.importbrage.metamodel.BrageIdentifier;
@@ -27,6 +28,7 @@ public final class XmlImport {
     private static final ObjectMapper objectMapper = new XmlMapper();
     public static final String CONTRIBUTOR = "contributor";
     public static final String COVERAGE = "coverage";
+    public static final String CREATOR = "creator";
     public static final String DATE = "date";
     public static final String IDENTIFIER = "identifier";
     public static final List<String> errors = new ArrayList<>();
@@ -67,6 +69,13 @@ public final class XmlImport {
             case COVERAGE:
                 try {
                     publication.addCoverage(new BrageCoverage(value));
+                } catch (InvalidQualifierException e) {
+                    errors.add(e.getMessage());
+                }
+                break;
+            case CREATOR:
+                try {
+                    publication.addCreator(new BrageCreator(value));
                 } catch (InvalidQualifierException e) {
                     errors.add(e.getMessage());
                 }
