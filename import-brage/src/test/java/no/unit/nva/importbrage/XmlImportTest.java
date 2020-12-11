@@ -53,6 +53,7 @@ class XmlImportTest {
     private static final String EN_US = "en_US";
     public static final String DC = "dc";
     public static final String DESCRIPTION = "description";
+    public static final String DESCRIPTION_STRING = "Something resembling a description!";
     public static TestAppender logger;
     public static final ObjectMapper mapper = new XmlMapper();
 
@@ -109,6 +110,17 @@ class XmlImportTest {
         xmlImport.map(file);
         var errors = xmlImport.getErrors();
         assertThat(errors, is(not(empty())));
+    }
+
+    @ParameterizedTest(name = "XmlImport allows Description qualified type {0}")
+    @EnumSource(DescriptionType.class)
+    void xmlImportGeneratesBragePublicationWhenDescriptionsArePresent(DescriptionType type) throws IOException {
+        var testPair = generateTestPair(Map.of(type, DESCRIPTION_STRING));
+        var file = getTemporaryFile();
+        writeXmlFile(file, testPair.getKey());
+        var xmlImport = new XmlImport();
+        var publication = xmlImport.map(file);
+        assertThat(publication, equalTo(testPair.getValue()));
     }
 
     @ParameterizedTest(name = "XmlImport allows Identifier qualified type {0}")
