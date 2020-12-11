@@ -225,7 +225,6 @@ class XmlImportTest {
         mapper.writeValue(file, dublinCore);
     }
 
-
     private AbstractMap.SimpleEntry<DublinCore, BragePublication> generateTestPair(
             Map<Enum<? extends Enum<?>>, String> data) {
         List<DcValue> dcValues = new ArrayList<>();
