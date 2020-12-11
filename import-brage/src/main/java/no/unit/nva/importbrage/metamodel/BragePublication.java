@@ -9,6 +9,7 @@ public class BragePublication {
     private List<BrageContributor> contributors;
     private List<BrageCoverage> coverage;
     private List<BrageDate> dates;
+    private List<BrageIdentifier> identifiers;
 
     public BragePublication() {
 
@@ -57,5 +58,20 @@ public class BragePublication {
 
     public List<BrageDate> getDates() {
         return this.dates;
+    }
+
+    /**
+     * Add a single identifier.
+     * @param brageIdentifier An identifier.
+     */
+    public void addIdentifier(BrageIdentifier brageIdentifier) {
+        if (isNull(identifiers)) {
+            identifiers = new ArrayList<>();
+        }
+        identifiers.add(brageIdentifier);
+    }
+
+    public List<BrageIdentifier> getIdentifiers() {
+        return this.identifiers;
     }
 }

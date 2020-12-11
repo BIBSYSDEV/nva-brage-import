@@ -4,9 +4,6 @@ plugins {
 
 version 'unspecified'
 
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     def jacksonVersion = '2.12.0'

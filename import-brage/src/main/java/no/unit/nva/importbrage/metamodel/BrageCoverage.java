@@ -1,9 +1,9 @@
 package no.unit.nva.importbrage.metamodel;
 
 import no.unit.nva.importbrage.DcValue;
+import nva.commons.utils.JacocoGenerated;
 
-import java.util.Arrays;
-import java.util.Locale;
+import java.util.Objects;
 
 public class BrageCoverage {
     /*
@@ -17,8 +17,8 @@ public class BrageCoverage {
           dc.coverage.temporal  Temporal characteristics of content.
     */
 
-    private CoverageType type;
-    private String value;
+    private final CoverageType type;
+    private final String value;
 
     public BrageCoverage(String type, String value) {
         this(CoverageType.getTypeByName(type), value);
@@ -41,29 +41,23 @@ public class BrageCoverage {
         return value;
     }
 
-    public enum CoverageType {
-        SPATIAL("spatial"),
-        TEMPORAL("temporal");
-
-        String type;
-
-        CoverageType(String type) {
-            this.type = type;
+    @JacocoGenerated
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
-
-        public String getType() {
-            return type;
+        if (!(o instanceof BrageCoverage)) {
+            return false;
         }
+        BrageCoverage that = (BrageCoverage) o;
+        return getType() == that.getType()
+                && Objects.equals(getValue(), that.getValue());
+    }
 
-        /**
-         * Get the equivalent CoverageType by its string representation.
-         * @param typeName A string of a CoverageType.
-         * @return A corresponding CoverageType
-         */
-        public static CoverageType getTypeByName(String typeName) {
-            return Arrays.stream(values())
-                    .filter(value -> value.getType().equals(typeName.toLowerCase(Locale.ROOT)))
-                    .findFirst().orElseThrow();
-        }
+    @JacocoGenerated
+    @Override
+    public int hashCode() {
+        return Objects.hash(getType(), getValue());
     }
 }

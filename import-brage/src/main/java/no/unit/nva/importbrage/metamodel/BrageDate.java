@@ -1,9 +1,9 @@
 package no.unit.nva.importbrage.metamodel;
 
 import no.unit.nva.importbrage.DcValue;
+import nva.commons.utils.JacocoGenerated;
 
-import java.util.Arrays;
-import java.util.Locale;
+import java.util.Objects;
 
 public class BrageDate {
     /*
@@ -28,8 +28,8 @@ public class BrageDate {
             dc.date.updated          The last time the item was updated via the SWORD interface.
      */
 
-    private DateType dateType;
-    private String value;
+    private final DateType dateType;
+    private final String value;
 
     public BrageDate(DcValue value) {
         this(value.getQualifier(), value.getValue());
@@ -48,39 +48,28 @@ public class BrageDate {
         return dateType;
     }
 
-    public String getvalue() {
+    @JacocoGenerated
+    public String getValue() {
         return value;
     }
 
-    public enum DateType {
-        ACCESSIONED("accessioned"),
-        AVAILABLE("available"),
-        COPYRIGHT("copyright"),
-        CREATED("created"),
-        EMBARGO_END_DATE("embargoenddate"),
-        ISSUED("issued"),
-        SUBMITTED("submitted"),
-        SWORD_UPDATED("updated");
-
-        private final String type;
-
-        DateType(String type) {
-            this.type = type;
+    @JacocoGenerated
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
-
-        public String getTypeName() {
-            return type;
+        if (!(o instanceof BrageDate)) {
+            return false;
         }
+        BrageDate brageDate = (BrageDate) o;
+        return getDateType() == brageDate.getDateType()
+                && Objects.equals(value, brageDate.value);
+    }
 
-        /**
-         * Get the equivalent DateType by its string representation.
-         * @param typeName A string of a DateType.
-         * @return A corresponding DateType
-         */
-        public static DateType getTypeByName(String typeName) {
-            return Arrays.stream(values())
-                    .filter(value -> value.getTypeName().equals(typeName.toLowerCase(Locale.ROOT)))
-                    .findFirst().orElseThrow();
-        }
+    @JacocoGenerated
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDateType(), value);
     }
 }

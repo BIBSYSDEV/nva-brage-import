@@ -14,12 +14,23 @@ public class DublinCore implements Serializable {
     @JacksonXmlProperty(isAttribute = true, localName = "schema")
     private String schema;
 
-    @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "dcvalue")
+    @JacksonXmlElementWrapper(useWrapping = false)
     private List<DcValue> dcValues;
-
 
     public List<DcValue> getDcValues() {
         return dcValues;
+    }
+
+    public void setSchema(String schema) {
+        this.schema = schema;
+    }
+
+    public void setDcValues(List<DcValue> dcValues) {
+        this.dcValues = dcValues;
+    }
+
+    public String getSchema() {
+        return schema;
     }
 }

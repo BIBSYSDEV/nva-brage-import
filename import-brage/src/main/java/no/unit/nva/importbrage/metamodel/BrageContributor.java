@@ -1,9 +1,9 @@
 package no.unit.nva.importbrage.metamodel;
 
 import no.unit.nva.importbrage.DcValue;
+import nva.commons.utils.JacocoGenerated;
 
-import java.util.Arrays;
-import java.util.Locale;
+import java.util.Objects;
 
 public class BrageContributor {
     /*
@@ -49,34 +49,23 @@ public class BrageContributor {
         return value;
     }
 
-    public enum ContributorType {
-        ADVISOR("advisor"),
-        AUTHOR("author"),
-        DEPARTMENT("department"),
-        EDITOR("editor"),
-        ILLUSTRATOR("illustrator"),
-        ORCID("orcid"),
-        OTHER("other");
-
-        private String typeName;
-
-        ContributorType(String typeName) {
-            this.typeName = typeName;
+    @JacocoGenerated
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
-
-        /**
-         * Get the equivalent ContributorType by its string representation.
-         * @param typeName A string of a ContributorType.
-         * @return A corresponding ContributorType
-         */
-        public static ContributorType getTypeByName(String typeName) {
-            return Arrays.stream(values())
-                    .filter(value -> value.getTypeName().equals(typeName.toLowerCase(Locale.ROOT)))
-                    .findFirst().orElseThrow();
+        if (!(o instanceof BrageContributor)) {
+            return false;
         }
+        BrageContributor that = (BrageContributor) o;
+        return getContributorType() == that.getContributorType()
+                && Objects.equals(getValue(), that.getValue());
+    }
 
-        public String getTypeName() {
-            return typeName;
-        }
+    @JacocoGenerated
+    @Override
+    public int hashCode() {
+        return Objects.hash(getContributorType(), getValue());
     }
 }
