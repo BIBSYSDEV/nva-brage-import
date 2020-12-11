@@ -13,6 +13,7 @@ public class BragePublication {
     private List<BrageCoverage> coverage;
     private List<BrageDate> dates;
     private List<BrageIdentifier> identifiers;
+    private List<BrageDescription> descriptions;
 
     public BragePublication() {
 
@@ -60,7 +61,7 @@ public class BragePublication {
     }
 
     public List<BrageDate> getDates() {
-        return this.dates;
+        return dates;
     }
 
     /**
@@ -75,7 +76,22 @@ public class BragePublication {
     }
 
     public List<BrageIdentifier> getIdentifiers() {
-        return this.identifiers;
+        return identifiers;
+    }
+
+    /**
+     * Adds a single description.
+     * @param brageDescription A description.
+     */
+    public void addDescription(BrageDescription brageDescription) {
+        if (isNull(descriptions)) {
+            descriptions = new ArrayList<>();
+        }
+        descriptions.add(brageDescription);
+    }
+
+    public List<BrageDescription> getDescriptions() {
+        return descriptions;
     }
 
     @JacocoGenerated
@@ -91,12 +107,13 @@ public class BragePublication {
         return Objects.equals(getContributors(), that.getContributors())
                 && Objects.equals(getCoverage(), that.getCoverage())
                 && Objects.equals(getDates(), that.getDates())
-                && Objects.equals(getIdentifiers(), that.getIdentifiers());
+                && Objects.equals(getIdentifiers(), that.getIdentifiers())
+                && Objects.equals(getDescriptions(), that.getDescriptions());
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getContributors(), getCoverage(), getDates(), getIdentifiers());
+        return Objects.hash(getContributors(), getCoverage(), getDates(), getIdentifiers(), getDescriptions());
     }
 }

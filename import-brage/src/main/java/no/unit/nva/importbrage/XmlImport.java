@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import no.unit.nva.importbrage.metamodel.BrageContributor;
 import no.unit.nva.importbrage.metamodel.BrageCoverage;
 import no.unit.nva.importbrage.metamodel.BrageDate;
+import no.unit.nva.importbrage.metamodel.BrageDescription;
 import no.unit.nva.importbrage.metamodel.BrageIdentifier;
 import no.unit.nva.importbrage.metamodel.BragePublication;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
@@ -20,6 +21,7 @@ public final class XmlImport {
 
     public static final String UNKNOWN_TYPE_LOG_MESSAGE
             = "Publication <%s> contains element \"%s\" that contains unknown type";
+    public static final String DESCRIPTION = "description";
     public static Logger logger = LogManager.getLogger(XmlImport.class);
 
     private static final ObjectMapper objectMapper = new XmlMapper();
@@ -71,6 +73,9 @@ public final class XmlImport {
                 break;
             case DATE:
                 publication.addDate(new BrageDate(value));
+                break;
+            case DESCRIPTION:
+                publication.addDescription(new BrageDescription(value));
                 break;
             case IDENTIFIER:
                 publication.addIdentifier(new BrageIdentifier(value));

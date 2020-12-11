@@ -6,11 +6,13 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import no.unit.nva.importbrage.metamodel.BrageContributor;
 import no.unit.nva.importbrage.metamodel.BrageCoverage;
 import no.unit.nva.importbrage.metamodel.BrageDate;
+import no.unit.nva.importbrage.metamodel.BrageDescription;
 import no.unit.nva.importbrage.metamodel.BrageIdentifier;
 import no.unit.nva.importbrage.metamodel.BragePublication;
 import no.unit.nva.importbrage.metamodel.ContributorType;
 import no.unit.nva.importbrage.metamodel.CoverageType;
 import no.unit.nva.importbrage.metamodel.DateType;
+import no.unit.nva.importbrage.metamodel.DescriptionType;
 import no.unit.nva.importbrage.metamodel.IdentifierType;
 import nva.commons.utils.log.LogUtils;
 import nva.commons.utils.log.TestAppender;
@@ -50,6 +52,7 @@ class XmlImportTest {
     public static final String IDENTIFIER = "identifier";
     private static final String EN_US = "en_US";
     public static final String DC = "dc";
+    public static final String DESCRIPTION = "description";
     public static TestAppender logger;
     public static final ObjectMapper mapper = new XmlMapper();
 
@@ -67,7 +70,8 @@ class XmlImportTest {
                 ContributorType.AUTHOR, RANDY_OLSON,
                 CoverageType.SPATIAL, NORWAY,
                 DateType.ACCESSIONED, ANY_DATE,
-                IdentifierType.URI, EXAMPLE_URI);
+                IdentifierType.URI, EXAMPLE_URI,
+                DescriptionType.ABSTRACT, "A long descriptive text that stands as a description");
         var testPair = generateTestPair(testData);
         var file = getTemporaryFile();
         writeXmlFile(file, testPair.getKey());
@@ -234,6 +238,12 @@ class XmlImportTest {
                 publication.addDate(new BrageDate(dateType, value));
                 return;
             }
+            if (type instanceof DescriptionType) {
+                var descriptionType = (DescriptionType) type;
+                dcValues.add(generateDcValueForDescription(descriptionType, value));
+                publication.addDescription(new BrageDescription(descriptionType, value));
+                return;
+            }
             if (type instanceof IdentifierType) {
                 var identifierType = (IdentifierType) type;
                 dcValues.add(generateDcValueForIdentifier(identifierType, value));
@@ -247,6 +257,15 @@ class XmlImportTest {
         dublinCore.setDcValues(dcValues);
 
         return new AbstractMap.SimpleEntry<>(dublinCore, publication);
+    }
+
+    private DcValue generateDcValueForDescription(DescriptionType descriptionType, String value) {
+        return new DcValueBuilder()
+                .withElement(DESCRIPTION)
+                .withLanguage(EN_US)
+                .withQualifier(descriptionType.getTypeName())
+                .withValue(value)
+                .build();
     }
 
     private DcValue generateDcValueForIdentifier(IdentifierType uriType, String value) {
