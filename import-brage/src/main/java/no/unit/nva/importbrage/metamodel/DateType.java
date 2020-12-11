@@ -3,6 +3,8 @@ package no.unit.nva.importbrage.metamodel;
 import java.util.Arrays;
 import java.util.Locale;
 
+import static java.util.Objects.isNull;
+
 public enum DateType {
     ACCESSIONED("accessioned"),
     AVAILABLE("available"),
@@ -11,7 +13,8 @@ public enum DateType {
     EMBARGO_END_DATE("embargoenddate"),
     ISSUED("issued"),
     SUBMITTED("submitted"),
-    SWORD_UPDATED("updated");
+    SWORD_UPDATED("updated"),
+    UNQUALIFIED(null);
 
     private final String type;
 
@@ -30,7 +33,8 @@ public enum DateType {
      * @return A corresponding DateType
      */
     public static DateType getTypeByName(String typeName) {
-        return Arrays.stream(values())
+        return isNull(typeName) || typeName.isEmpty() ? UNQUALIFIED
+                : Arrays.stream(values())
                 .filter(value -> value.getTypeName().equals(typeName.toLowerCase(Locale.ROOT)))
                 .findFirst().orElseThrow();
     }

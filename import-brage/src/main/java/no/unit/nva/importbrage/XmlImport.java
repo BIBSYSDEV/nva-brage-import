@@ -7,6 +7,7 @@ import no.unit.nva.importbrage.metamodel.BrageCoverage;
 import no.unit.nva.importbrage.metamodel.BrageDate;
 import no.unit.nva.importbrage.metamodel.BrageIdentifier;
 import no.unit.nva.importbrage.metamodel.BragePublication;
+import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,10 +63,14 @@ public final class XmlImport {
                 publication.addContributor(new BrageContributor(value));
                 break;
             case COVERAGE:
-                publication.addCoverage(new BrageCoverage(value));
+                try {
+                    publication.addCoverage(new BrageCoverage(value));
+                } catch (InvalidQualifierException e) {
+                    errors.add(e.getMessage());
+                }
                 break;
             case DATE:
-                publication.setDate(new BrageDate(value));
+                publication.addDate(new BrageDate(value));
                 break;
             case IDENTIFIER:
                 publication.addIdentifier(new BrageIdentifier(value));

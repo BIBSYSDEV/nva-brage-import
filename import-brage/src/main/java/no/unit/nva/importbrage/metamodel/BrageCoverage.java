@@ -1,6 +1,7 @@
 package no.unit.nva.importbrage.metamodel;
 
 import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
@@ -20,7 +21,7 @@ public class BrageCoverage {
     private final CoverageType type;
     private final String value;
 
-    public BrageCoverage(String type, String value) {
+    public BrageCoverage(String type, String value) throws InvalidQualifierException {
         this(CoverageType.getTypeByName(type), value);
     }
 
@@ -29,7 +30,7 @@ public class BrageCoverage {
         this.value = value;
     }
 
-    public BrageCoverage(DcValue value) {
+    public BrageCoverage(DcValue value) throws InvalidQualifierException {
         this(value.getQualifier(), value.getValue());
     }
 

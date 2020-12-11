@@ -3,6 +3,8 @@ package no.unit.nva.importbrage.metamodel;
 import java.util.Arrays;
 import java.util.Locale;
 
+import static java.util.Objects.isNull;
+
 public enum IdentifierType {
     CITATION("citation"),
     CRISTIN("cristin"),
@@ -14,7 +16,8 @@ public enum IdentifierType {
     PMID("pmid"),
     SLUG("slug"),
     URI("uri"),
-    URN("urn");
+    URN("urn"),
+    UNQUALIFIED(null);
 
     private final String type;
 
@@ -33,7 +36,8 @@ public enum IdentifierType {
      * @return A corresponding DateType
      */
     public static IdentifierType getTypeByName(String typeName) {
-        return Arrays.stream(values())
+        return isNull(typeName) || typeName.isEmpty() ? UNQUALIFIED
+                : Arrays.stream(values())
                 .filter(value -> value.getTypeName().equals(typeName.toLowerCase(Locale.ROOT)))
                 .findFirst().orElseThrow();
     }

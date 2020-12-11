@@ -3,6 +3,8 @@ package no.unit.nva.importbrage.metamodel;
 import java.util.Arrays;
 import java.util.Locale;
 
+import static java.util.Objects.isNull;
+
 public enum ContributorType {
     ADVISOR("advisor"),
     AUTHOR("author"),
@@ -11,7 +13,7 @@ public enum ContributorType {
     ILLUSTRATOR("illustrator"),
     ORCID("orcid"),
     OTHER("other"),
-    NULL(null);
+    UNQUALIFIED(null);
 
     private final String typeName;
 
@@ -26,7 +28,8 @@ public enum ContributorType {
      * @return A corresponding ContributorType
      */
     public static ContributorType getTypeByName(String typeName) {
-        return Arrays.stream(values())
+        return isNull(typeName) || typeName.isEmpty() ? UNQUALIFIED
+                : Arrays.stream(values())
                 .filter(value -> value.getTypeName().equals(typeName.toLowerCase(Locale.ROOT)))
                 .findFirst().orElseThrow();
     }

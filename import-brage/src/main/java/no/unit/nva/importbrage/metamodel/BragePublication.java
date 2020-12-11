@@ -1,7 +1,10 @@
 package no.unit.nva.importbrage.metamodel;
 
+import nva.commons.utils.JacocoGenerated;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Objects.isNull;
 
@@ -49,7 +52,7 @@ public class BragePublication {
      * Add a single date.
      * @param brageDate A date.
      */
-    public void setDate(BrageDate brageDate) {
+    public void addDate(BrageDate brageDate) {
         if (isNull(dates)) {
             dates = new ArrayList<>();
         }
@@ -73,5 +76,27 @@ public class BragePublication {
 
     public List<BrageIdentifier> getIdentifiers() {
         return this.identifiers;
+    }
+
+    @JacocoGenerated
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof BragePublication)) {
+            return false;
+        }
+        BragePublication that = (BragePublication) o;
+        return Objects.equals(getContributors(), that.getContributors())
+                && Objects.equals(getCoverage(), that.getCoverage())
+                && Objects.equals(getDates(), that.getDates())
+                && Objects.equals(getIdentifiers(), that.getIdentifiers());
+    }
+
+    @JacocoGenerated
+    @Override
+    public int hashCode() {
+        return Objects.hash(getContributors(), getCoverage(), getDates(), getIdentifiers());
     }
 }

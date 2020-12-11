@@ -26,6 +26,7 @@ public class BrageDate {
             dc.date.issued           Date of publication or distribution.
             dc.date.submitted        For theses/dissertations.
             dc.date.updated          The last time the item was updated via the SWORD interface.
+            dc.date                  Use qualified form if possible.
      */
 
     private final DateType dateType;
