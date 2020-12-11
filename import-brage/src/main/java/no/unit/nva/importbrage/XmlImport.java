@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import no.unit.nva.importbrage.metamodel.BrageContributor;
 import no.unit.nva.importbrage.metamodel.BrageCoverage;
+import no.unit.nva.importbrage.metamodel.BrageDate;
 import no.unit.nva.importbrage.metamodel.BragePublication;
 
 import java.io.File;
@@ -14,13 +15,14 @@ public final class XmlImport {
     private static final ObjectMapper objectMapper = new XmlMapper();
     public static final String CONTRIBUTOR = "contributor";
     public static final String COVERAGE = "coverage";
+    public static final String DATE = "date";
 
     private XmlImport() {
 
     }
 
     /**
-     * Returns a list of contributors from a Brage qualified Dublin Core xml export.
+     * Returns a BragePublication from a Brage qualified Dublin Core xml export.
      * @param file An XML file.
      * @return A list of contributor objects.
      * @throws IOException If the file cannot be found.
@@ -39,6 +41,9 @@ public final class XmlImport {
         }
         if (COVERAGE.equals(element)) {
             publication.setCoverage(new BrageCoverage(value));
+        }
+        if (DATE.equals(element)) {
+            publication.setDate(new BrageDate(value));
         }
     }
 }
