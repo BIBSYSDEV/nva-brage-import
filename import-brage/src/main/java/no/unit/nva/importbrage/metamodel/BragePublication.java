@@ -14,7 +14,8 @@ public class BragePublication {
     private List<BrageDate> dates;
     private List<BrageIdentifier> identifiers;
     private List<BrageDescription> descriptions;
-    private List<Object> creators;
+    private List<BrageCreator> creators;
+    private List<BrageFormat> formats;
 
     public BragePublication() {
 
@@ -23,6 +24,31 @@ public class BragePublication {
     public List<BrageContributor> getContributors() {
         return contributors;
     }
+
+    public List<BrageCoverage> getCoverage() {
+        return coverage;
+    }
+
+    public List<BrageCreator> getCreators() {
+        return creators;
+    }
+
+    public List<BrageDescription> getDescriptions() {
+        return descriptions;
+    }
+
+    public List<BrageDate> getDates() {
+        return dates;
+    }
+
+    public List<BrageFormat> getFormats() {
+        return formats;
+    }
+
+    public List<BrageIdentifier> getIdentifiers() {
+        return identifiers;
+    }
+
 
     /**
      * Add a single contributor.
@@ -33,10 +59,6 @@ public class BragePublication {
             contributors = new ArrayList<>();
         }
         contributors.add(brageContributor);
-    }
-
-    public List<BrageCoverage> getCoverage() {
-        return coverage;
     }
 
     /**
@@ -61,10 +83,6 @@ public class BragePublication {
         dates.add(brageDate);
     }
 
-    public List<BrageDate> getDates() {
-        return dates;
-    }
-
     /**
      * Add a single identifier.
      * @param brageIdentifier An identifier.
@@ -74,10 +92,6 @@ public class BragePublication {
             identifiers = new ArrayList<>();
         }
         identifiers.add(brageIdentifier);
-    }
-
-    public List<BrageIdentifier> getIdentifiers() {
-        return identifiers;
     }
 
     /**
@@ -91,10 +105,6 @@ public class BragePublication {
         descriptions.add(brageDescription);
     }
 
-    public List<BrageDescription> getDescriptions() {
-        return descriptions;
-    }
-
     /**
      * Adds a single creator.
      * @param brageCreator A creator.
@@ -104,6 +114,17 @@ public class BragePublication {
             creators = new ArrayList<>();
         }
         creators.add(brageCreator);
+    }
+
+    /**
+     * Adds a single format.
+     * @param brageFormat A format.
+     */
+    public void addFormat(BrageFormat brageFormat) {
+        if (isNull(formats)) {
+            formats = new ArrayList<>();
+        }
+        formats.add(brageFormat);
     }
 
     @JacocoGenerated
@@ -121,13 +142,14 @@ public class BragePublication {
                 && Objects.equals(getDates(), that.getDates())
                 && Objects.equals(getIdentifiers(), that.getIdentifiers())
                 && Objects.equals(getDescriptions(), that.getDescriptions())
-                && Objects.equals(creators, that.creators);
+                && Objects.equals(getCreators(), that.getCreators())
+                && Objects.equals(getFormats(), that.getFormats());
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getContributors(), getCoverage(), getDates(),
-                getIdentifiers(), getDescriptions(), creators);
+        return Objects.hash(getContributors(), getCoverage(), getDates(), getIdentifiers(),
+                getDescriptions(), getCreators(), getFormats());
     }
 }

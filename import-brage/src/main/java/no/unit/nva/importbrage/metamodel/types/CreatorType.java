@@ -2,25 +2,17 @@ package no.unit.nva.importbrage.metamodel.types;
 
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 
-import java.util.Arrays;
-import java.util.function.Supplier;
-
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.joining;
-
-public enum CreatorType {
+public enum CreatorType implements ElementType {
     UNQUALIFIED(null);
 
-    private static final String ALLOWED = getAllowedValues();
     public static final String CREATOR = "creator";
-    public static final String DELIMITER = ", ";
     private final String typeName;
 
     CreatorType(String typeName) {
         this.typeName = typeName;
     }
 
+    @Override
     public String getTypeName() {
         return typeName;
     }
@@ -28,19 +20,11 @@ public enum CreatorType {
     /**
      * Get the equivalent CreatorType by its string representation.
      *
-     * @param typeName A string of a CreatorType.
+     * @param candidate A string of a CreatorType.
      * @return A corresponding CreatorType
      */
-    public static CreatorType getTypeByName(String typeName) throws InvalidQualifierException {
-        return isNull(typeName) || typeName.isEmpty() ? UNQUALIFIED
-                : Arrays.stream(values())
-                .filter(value -> nonNull(value.getTypeName()))
-                .findFirst()
-                .orElseThrow(getInvalidQualifierExceptionSupplier(typeName));
-    }
-
-    private static Supplier<InvalidQualifierException> getInvalidQualifierExceptionSupplier(String typeName) {
-        return () -> new InvalidQualifierException(CREATOR, typeName, ALLOWED);
+    public static CreatorType getTypeByName(String candidate) throws InvalidQualifierException {
+        return (CreatorType) ElementType.getTypeByName(CREATOR, candidate, values(), UNQUALIFIED);
     }
 
     /**
@@ -48,8 +32,6 @@ public enum CreatorType {
      * @return A string representation of the allowed values.
      */
     public static String getAllowedValues() {
-        return Arrays.stream(values())
-                .map(CreatorType::getTypeName)
-                .collect(joining(DELIMITER));
+        return ElementType.getAllowedValues(values());
     }
 }

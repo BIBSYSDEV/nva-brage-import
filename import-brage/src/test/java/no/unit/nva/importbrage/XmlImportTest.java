@@ -8,6 +8,7 @@ import no.unit.nva.importbrage.metamodel.BrageCoverage;
 import no.unit.nva.importbrage.metamodel.BrageCreator;
 import no.unit.nva.importbrage.metamodel.BrageDate;
 import no.unit.nva.importbrage.metamodel.BrageDescription;
+import no.unit.nva.importbrage.metamodel.BrageFormat;
 import no.unit.nva.importbrage.metamodel.BrageIdentifier;
 import no.unit.nva.importbrage.metamodel.BragePublication;
 import no.unit.nva.importbrage.metamodel.types.ContributorType;
@@ -15,6 +16,7 @@ import no.unit.nva.importbrage.metamodel.types.CoverageType;
 import no.unit.nva.importbrage.metamodel.types.CreatorType;
 import no.unit.nva.importbrage.metamodel.types.DateType;
 import no.unit.nva.importbrage.metamodel.types.DescriptionType;
+import no.unit.nva.importbrage.metamodel.types.FormatType;
 import no.unit.nva.importbrage.metamodel.types.IdentifierType;
 import nva.commons.utils.log.LogUtils;
 import nva.commons.utils.log.TestAppender;
@@ -34,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import static no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException.MESSAGE_TEMPLATE;
+import static no.unit.nva.importbrage.metamodel.types.FormatType.FORMAT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
@@ -61,6 +64,7 @@ class XmlImportTest {
     public static final String CREATOR = "creator";
     public static final String DELIMITER = ", ";
     public static final String NONSENSE = "nonsense";
+    public static final String ANY_FORMAT = "123-300";
     public static TestAppender logger;
     public static final ObjectMapper mapper = new XmlMapper();
 
@@ -80,7 +84,8 @@ class XmlImportTest {
                 CreatorType.UNQUALIFIED, RANDY_OLSON,
                 DateType.ACCESSIONED, ANY_DATE,
                 IdentifierType.URI, EXAMPLE_URI,
-                DescriptionType.ABSTRACT, "A long descriptive text that stands as a description");
+                DescriptionType.ABSTRACT, "A long descriptive text that stands as a description",
+                FormatType.EXTENT, "232");
         var testPair = generateTestPair(testData);
         var file = getTemporaryFile();
         writeXmlFile(file, testPair.getKey());
@@ -153,6 +158,17 @@ class XmlImportTest {
         assertThat(publication, equalTo(testPair.getValue()));
     }
 
+    @ParameterizedTest(name = "XmlImport allows Format qualified type {0}")
+    @EnumSource(FormatType.class)
+    void xmlImportGeneratesBragePublicationWhenFormatsArePresent(FormatType type) throws IOException {
+        var testPair = generateTestPair(Map.of(type, ANY_FORMAT));
+        var file = getTemporaryFile();
+        writeXmlFile(file, testPair.getKey());
+        var xmlImport = new XmlImport();
+        var publication = xmlImport.map(file);
+        assertThat(publication, equalTo(testPair.getValue()));
+    }
+
     @ParameterizedTest(name = "XmlImport allows Coverage qualified type {0}")
     @EnumSource(CoverageType.class)
     void xmlImportGeneratesBragePublicationWhenCoveragePresent(CoverageType type) throws IOException {
@@ -179,7 +195,7 @@ class XmlImportTest {
     }
 
     @ParameterizedTest(name = "XmlImport creates report when qualifier is unknown for {0}")
-    @ValueSource(strings = {CONTRIBUTOR, COVERAGE, CREATOR, DATE, DESCRIPTION, IDENTIFIER})
+    @ValueSource(strings = {CONTRIBUTOR, COVERAGE, CREATOR, DATE, DESCRIPTION, FORMAT, IDENTIFIER})
     void xmlImportReportsBragePublicationWhenQualifierIsUnknown(String type) throws IOException {
         var dublinCore = generateDublinCoreWithQualifierForElement(type, NONSENSE);
         var file = getTemporaryFile();
@@ -204,6 +220,8 @@ class XmlImportTest {
                 return DateType.getAllowedValues();
             case DESCRIPTION:
                 return DescriptionType.getAllowedValues();
+            case FORMAT:
+                return FormatType.getAllowedValues();
             case IDENTIFIER:
                 return IdentifierType.getAllowedValues();
             default:
@@ -282,7 +300,7 @@ class XmlImportTest {
     }
 
     private AbstractMap.SimpleEntry<DublinCore, BragePublication> generateTestPair(
-            Map<Enum<? extends Enum<?>>, String> data) {
+            Map<? extends Enum<? extends Enum<?>>, String> data) {
         List<DcValue> dcValues = new ArrayList<>();
         BragePublication publication = new BragePublication();
 
@@ -323,6 +341,12 @@ class XmlImportTest {
                 publication.addIdentifier(new BrageIdentifier(identifierType, value));
                 return;
             }
+            if (type instanceof FormatType) {
+                var formatType = (FormatType) type;
+                dcValues.add(generateDcValueForFormat(formatType, value));
+                publication.addFormat(new BrageFormat(formatType, value));
+                return;
+            }
             throw new RuntimeException("Cannot generate test data for unknown type");
         });
 
@@ -330,6 +354,15 @@ class XmlImportTest {
         dublinCore.setDcValues(dcValues);
 
         return new AbstractMap.SimpleEntry<>(dublinCore, publication);
+    }
+
+    private DcValue generateDcValueForFormat(FormatType formatType, String value) {
+        return new DcValueBuilder()
+                .withElement(FORMAT)
+                .withLanguage(EN_US)
+                .withQualifier(formatType.getTypeName())
+                .withValue(value)
+                .build();
     }
 
     private DcValue generateDcValueForDescription(DescriptionType descriptionType, String value) {

@@ -7,6 +7,7 @@ import no.unit.nva.importbrage.metamodel.BrageCoverage;
 import no.unit.nva.importbrage.metamodel.BrageCreator;
 import no.unit.nva.importbrage.metamodel.BrageDate;
 import no.unit.nva.importbrage.metamodel.BrageDescription;
+import no.unit.nva.importbrage.metamodel.BrageFormat;
 import no.unit.nva.importbrage.metamodel.BrageIdentifier;
 import no.unit.nva.importbrage.metamodel.BragePublication;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
@@ -17,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static no.unit.nva.importbrage.metamodel.types.FormatType.FORMAT;
 
 public final class XmlImport {
 
@@ -94,6 +97,13 @@ public final class XmlImport {
             case DESCRIPTION:
                 try {
                     publication.addDescription(new BrageDescription(value));
+                } catch (InvalidQualifierException e) {
+                    errors.add(e.getMessage());
+                }
+                break;
+            case FORMAT:
+                try {
+                    publication.addFormat(new BrageFormat(value));
                 } catch (InvalidQualifierException e) {
                     errors.add(e.getMessage());
                 }
