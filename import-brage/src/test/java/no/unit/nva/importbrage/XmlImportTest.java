@@ -11,6 +11,7 @@ import no.unit.nva.importbrage.metamodel.BrageDescription;
 import no.unit.nva.importbrage.metamodel.BrageFormat;
 import no.unit.nva.importbrage.metamodel.BrageIdentifier;
 import no.unit.nva.importbrage.metamodel.BrageLanguage;
+import no.unit.nva.importbrage.metamodel.BrageProvenance;
 import no.unit.nva.importbrage.metamodel.BragePublication;
 import no.unit.nva.importbrage.metamodel.types.ContributorType;
 import no.unit.nva.importbrage.metamodel.types.CoverageType;
@@ -21,6 +22,7 @@ import no.unit.nva.importbrage.metamodel.types.ElementType;
 import no.unit.nva.importbrage.metamodel.types.FormatType;
 import no.unit.nva.importbrage.metamodel.types.IdentifierType;
 import no.unit.nva.importbrage.metamodel.types.LanguageType;
+import no.unit.nva.importbrage.metamodel.types.ProvenanceType;
 import nva.commons.utils.log.LogUtils;
 import nva.commons.utils.log.TestAppender;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +51,7 @@ import static no.unit.nva.importbrage.metamodel.types.DescriptionType.DESCRIPTIO
 import static no.unit.nva.importbrage.metamodel.types.FormatType.FORMAT;
 import static no.unit.nva.importbrage.metamodel.types.IdentifierType.IDENTIFIER;
 import static no.unit.nva.importbrage.metamodel.types.LanguageType.LANGUAGE;
+import static no.unit.nva.importbrage.metamodel.types.ProvenanceType.PROVENANCE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
@@ -91,7 +94,8 @@ class XmlImportTest {
                 IdentifierType.URI, EXAMPLE_URI,
                 DescriptionType.ABSTRACT, "A long descriptive text that stands as a description",
                 FormatType.EXTENT, "232",
-                LanguageType.ISO, "en");
+                LanguageType.ISO, "en",
+                ProvenanceType.UNQUALIFIED, "Stolen goods");
         var testPair = generateTestPair(testData);
         BragePublication publication = getBragePublication(testPair.getKey());
         assertThat(publication, equalTo(testPair.getValue()));
@@ -143,6 +147,7 @@ class XmlImportTest {
         elementTypes.addAll(Arrays.asList(FormatType.values()));
         elementTypes.addAll(Arrays.asList(IdentifierType.values()));
         elementTypes.addAll(Arrays.asList(LanguageType.values()));
+        elementTypes.addAll(Arrays.asList(ProvenanceType.values()));
 
         for (ElementType elementType : elementTypes) {
             argumentsBuilder.add(Arguments.of(elementType.getClass().getSimpleName(), elementType));
@@ -164,7 +169,8 @@ class XmlImportTest {
     }
 
     @ParameterizedTest(name = "XmlImport creates report when qualifier is unknown for {0}")
-    @ValueSource(strings = {CONTRIBUTOR, COVERAGE, CREATOR, DATE, DESCRIPTION, FORMAT, IDENTIFIER, LANGUAGE})
+    @ValueSource(strings = {CONTRIBUTOR, COVERAGE, CREATOR, DATE, DESCRIPTION, FORMAT, IDENTIFIER, LANGUAGE,
+            PROVENANCE})
     void xmlImportReportsBragePublicationWhenQualifierIsUnknown(String type) throws IOException {
         var dublinCore = generateDublinCoreWithQualifierForElement(type, NONSENSE);
         File file = generateXmlFile(dublinCore);
@@ -214,6 +220,8 @@ class XmlImportTest {
                 return IdentifierType.getAllowedValues();
             case LANGUAGE:
                 return LanguageType.getAllowedValues();
+            case PROVENANCE:
+                return ProvenanceType.getAllowedValues();
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }
@@ -307,6 +315,12 @@ class XmlImportTest {
                 publication.addLanguage(new BrageLanguage(languageType, value));
                 return;
             }
+            if (type instanceof ProvenanceType) {
+                var provenanceType = (ProvenanceType) type;
+                dcValues.add(generateDcValueForProvenance(provenanceType, value));
+                publication.addProvenance(new BrageProvenance(provenanceType, value));
+                return;
+            }
             throw new RuntimeException("Cannot generate test data for unknown type");
         });
 
@@ -388,6 +402,15 @@ class XmlImportTest {
                 .build();
     }
 
+    private DcValue generateDcValueForProvenance(ProvenanceType provenanceType, String value) {
+        return new DcValueBuilder()
+                .withElement(PROVENANCE)
+                .withLanguage(EN_US)
+                .withQualifier(provenanceType.getTypeName())
+                .withValue(value)
+                .build();
+    }
+
     private BragePublication generateBragePublication(File file) throws IOException {
         var xmlImport = new XmlImport();
         return xmlImport.map(file);
@@ -398,7 +421,6 @@ class XmlImportTest {
         writeXmlFile(file, key);
         return file;
     }
-
 
     private BragePublication getBragePublication(DublinCore key) throws IOException {
         File file = generateXmlFile(key);

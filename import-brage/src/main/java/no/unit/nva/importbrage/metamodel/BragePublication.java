@@ -17,6 +17,7 @@ public class BragePublication {
     private List<BrageCreator> creators;
     private List<BrageFormat> formats;
     private List<BrageLanguage> languages;
+    private List<BrageProvenance> provenances;
 
     public BragePublication() {
 
@@ -54,6 +55,9 @@ public class BragePublication {
         return languages;
     }
 
+    public List<BrageProvenance> getProvenances() {
+        return provenances;
+    }
 
     /**
      * Add a single contributor.
@@ -143,6 +147,17 @@ public class BragePublication {
         languages.add(brageLanguage);
     }
 
+    /**
+     * Adds a single provenance.
+     * @param brageProvenance A provenance.
+     */
+    public void addProvenance(BrageProvenance brageProvenance) {
+        if (isNull(provenances)) {
+            provenances = new ArrayList<>();
+        }
+        provenances.add(brageProvenance);
+    }
+
     @JacocoGenerated
     @Override
     public boolean equals(Object o) {
@@ -160,13 +175,14 @@ public class BragePublication {
                 && Objects.equals(getDescriptions(), that.getDescriptions())
                 && Objects.equals(getCreators(), that.getCreators())
                 && Objects.equals(getFormats(), that.getFormats())
-                && Objects.equals(getLanguages(), that.getLanguages());
+                && Objects.equals(getLanguages(), that.getLanguages())
+                && Objects.equals(getProvenances(), that.getProvenances());
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
         return Objects.hash(getContributors(), getCoverage(), getDates(), getIdentifiers(),
-                getDescriptions(), getCreators(), getFormats(), getLanguages());
+                getDescriptions(), getCreators(), getFormats(), getLanguages(), getProvenances());
     }
 }
