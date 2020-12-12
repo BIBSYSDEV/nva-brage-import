@@ -36,7 +36,12 @@ import java.util.List;
 import java.util.Map;
 
 import static no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException.MESSAGE_TEMPLATE;
+import static no.unit.nva.importbrage.metamodel.types.ContributorType.CONTRIBUTOR;
+import static no.unit.nva.importbrage.metamodel.types.CoverageType.COVERAGE;
+import static no.unit.nva.importbrage.metamodel.types.CreatorType.CREATOR;
+import static no.unit.nva.importbrage.metamodel.types.DescriptionType.DESCRIPTION;
 import static no.unit.nva.importbrage.metamodel.types.FormatType.FORMAT;
+import static no.unit.nva.importbrage.metamodel.types.IdentifierType.IDENTIFIER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
@@ -50,18 +55,13 @@ class XmlImportTest {
 
     public static final String TEMP_FILE = "complete_record.xml";
     public static final String EXAMPLE_URI = "https://example.org/article/1";
-    public static final String CONTRIBUTOR = "contributor";
     public static final String RANDY_OLSON = "Randy Olson";
-    public static final String COVERAGE = "coverage";
     public static final String NORWAY = "Norway";
     public static final String DATE = "date";
     public static final String ANY_DATE = "2020-02-01";
-    public static final String IDENTIFIER = "identifier";
     private static final String EN_US = "en_US";
     public static final String DC = "dc";
-    public static final String DESCRIPTION = "description";
     public static final String DESCRIPTION_STRING = "Something resembling a description!";
-    public static final String CREATOR = "creator";
     public static final String DELIMITER = ", ";
     public static final String NONSENSE = "nonsense";
     public static final String ANY_FORMAT = "123-300";
@@ -162,11 +162,15 @@ class XmlImportTest {
     @EnumSource(FormatType.class)
     void xmlImportGeneratesBragePublicationWhenFormatsArePresent(FormatType type) throws IOException {
         var testPair = generateTestPair(Map.of(type, ANY_FORMAT));
-        var file = getTemporaryFile();
-        writeXmlFile(file, testPair.getKey());
-        var xmlImport = new XmlImport();
-        var publication = xmlImport.map(file);
+        BragePublication publication = generatePublication(testPair.getKey());
         assertThat(publication, equalTo(testPair.getValue()));
+    }
+
+    private BragePublication generatePublication(DublinCore key) throws IOException {
+        var file = getTemporaryFile();
+        writeXmlFile(file, key);
+        var xmlImport = new XmlImport();
+        return xmlImport.map(file);
     }
 
     @ParameterizedTest(name = "XmlImport allows Coverage qualified type {0}")

@@ -19,21 +19,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.unit.nva.importbrage.metamodel.types.ContributorType.CONTRIBUTOR;
+import static no.unit.nva.importbrage.metamodel.types.CoverageType.COVERAGE;
+import static no.unit.nva.importbrage.metamodel.types.CreatorType.CREATOR;
+import static no.unit.nva.importbrage.metamodel.types.DateType.DATE;
+import static no.unit.nva.importbrage.metamodel.types.DescriptionType.DESCRIPTION;
 import static no.unit.nva.importbrage.metamodel.types.FormatType.FORMAT;
+import static no.unit.nva.importbrage.metamodel.types.IdentifierType.IDENTIFIER;
 
 public final class XmlImport {
 
     public static final String UNKNOWN_TYPE_LOG_MESSAGE
             = "Publication <%s> contains element \"%s\" that contains unknown type";
-    public static final String DESCRIPTION = "description";
     public static Logger logger = LogManager.getLogger(XmlImport.class);
 
     private static final ObjectMapper objectMapper = new XmlMapper();
-    public static final String CONTRIBUTOR = "contributor";
-    public static final String COVERAGE = "coverage";
-    public static final String CREATOR = "creator";
-    public static final String DATE = "date";
-    public static final String IDENTIFIER = "identifier";
     public static final List<String> errors = new ArrayList<>();
 
     public XmlImport() {
