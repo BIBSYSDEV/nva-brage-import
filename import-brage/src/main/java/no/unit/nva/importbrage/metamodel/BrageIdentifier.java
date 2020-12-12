@@ -1,6 +1,7 @@
 package no.unit.nva.importbrage.metamodel;
 
 import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import no.unit.nva.importbrage.metamodel.types.IdentifierType;
 import nva.commons.utils.JacocoGenerated;
 
@@ -38,11 +39,11 @@ public class BrageIdentifier {
     private final IdentifierType identifierType;
     private final String value;
 
-    public BrageIdentifier(DcValue value) {
+    public BrageIdentifier(DcValue value) throws InvalidQualifierException {
         this(value.getQualifier(), value.getValue());
     }
 
-    public BrageIdentifier(String identifierType, String value) {
+    public BrageIdentifier(String identifierType, String value) throws InvalidQualifierException {
         this(IdentifierType.getTypeByName(identifierType), value);
     }
 

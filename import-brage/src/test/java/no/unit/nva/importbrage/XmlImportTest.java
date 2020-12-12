@@ -24,6 +24,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.IOException;
@@ -177,17 +178,37 @@ class XmlImportTest {
         assertThat(actual, containsString(expectedMessage));
     }
 
-    @Test
-    void xmlImportReportsBragePublicationWhenCoverageQualifierIsUnknown() throws IOException {
-        var dublinCore = generateDublinCoreWithQualifierForElement(COVERAGE, NONSENSE);
+    @ParameterizedTest(name = "XmlImport creates report when qualifier is unknown for {0}")
+    @ValueSource(strings = {CONTRIBUTOR, COVERAGE, CREATOR, DATE, DESCRIPTION, IDENTIFIER})
+    void xmlImportReportsBragePublicationWhenQualifierIsUnknown(String type) throws IOException {
+        var dublinCore = generateDublinCoreWithQualifierForElement(type, NONSENSE);
         var file = getTemporaryFile();
         writeXmlFile(file, dublinCore);
         var xmlImport = new XmlImport();
         var publication = xmlImport.map(file);
         assertNull(publication);
         var actual = String.join(DELIMITER, xmlImport.getErrors());
-        String expectedMessage = String.format(MESSAGE_TEMPLATE, COVERAGE, NONSENSE, CoverageType.getAllowedValues());
+        String expectedMessage = String.format(MESSAGE_TEMPLATE, type, NONSENSE, getAllowedValues(type));
         assertThat(actual, containsString(expectedMessage));
+    }
+
+    private String getAllowedValues(String type) {
+        switch (type) {
+            case CONTRIBUTOR:
+                return ContributorType.getAllowedValues();
+            case COVERAGE:
+                return CoverageType.getAllowedValues();
+            case CREATOR:
+                return CreatorType.getAllowedValues();
+            case DATE:
+                return DateType.getAllowedValues();
+            case DESCRIPTION:
+                return DescriptionType.getAllowedValues();
+            case IDENTIFIER:
+                return IdentifierType.getAllowedValues();
+            default:
+                throw new RuntimeException("Unknown type: " + type);
+        }
     }
 
     @ParameterizedTest(name = "XmlImport allows Date qualified type {0}")

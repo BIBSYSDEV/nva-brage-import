@@ -1,6 +1,7 @@
 package no.unit.nva.importbrage.metamodel;
 
 import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import no.unit.nva.importbrage.metamodel.types.DescriptionType;
 import nva.commons.utils.JacocoGenerated;
 
@@ -56,11 +57,11 @@ public class BrageDescription {
     private final DescriptionType descriptionType;
     private final String value;
 
-    public BrageDescription(DcValue value) {
+    public BrageDescription(DcValue value) throws InvalidQualifierException {
         this(value.getQualifier(), value.getValue());
     }
 
-    public BrageDescription(String qualifier, String value) {
+    public BrageDescription(String qualifier, String value) throws InvalidQualifierException {
         this(DescriptionType.getTypeByName(qualifier), value);
     }
 

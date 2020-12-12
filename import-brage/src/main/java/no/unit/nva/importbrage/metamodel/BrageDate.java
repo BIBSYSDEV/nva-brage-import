@@ -1,6 +1,7 @@
 package no.unit.nva.importbrage.metamodel;
 
 import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import no.unit.nva.importbrage.metamodel.types.DateType;
 import nva.commons.utils.JacocoGenerated;
 
@@ -33,11 +34,11 @@ public class BrageDate {
     private final DateType dateType;
     private final String value;
 
-    public BrageDate(DcValue value) {
+    public BrageDate(DcValue value) throws InvalidQualifierException {
         this(value.getQualifier(), value.getValue());
     }
 
-    public BrageDate(String dateType, String value) {
+    public BrageDate(String dateType, String value) throws InvalidQualifierException {
         this(DateType.getTypeByName(dateType), value);
     }
 

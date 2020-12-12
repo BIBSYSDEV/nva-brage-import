@@ -1,6 +1,7 @@
 package no.unit.nva.importbrage.metamodel;
 
 import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import no.unit.nva.importbrage.metamodel.types.ContributorType;
 import nva.commons.utils.JacocoGenerated;
 
@@ -28,12 +29,11 @@ public class BrageContributor {
     private final ContributorType contributorType;
     private final String value;
 
-
-    public BrageContributor(DcValue value) {
+    public BrageContributor(DcValue value) throws InvalidQualifierException {
         this(value.getQualifier(), value.getValue());
     }
 
-    public BrageContributor(String qualifier, String value) {
+    public BrageContributor(String qualifier, String value) throws InvalidQualifierException {
         this(ContributorType.getTypeByName(qualifier), value);
     }
 

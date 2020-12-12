@@ -64,7 +64,11 @@ public final class XmlImport {
         var element = value.getElement();
         switch (element) {
             case CONTRIBUTOR:
-                publication.addContributor(new BrageContributor(value));
+                try {
+                    publication.addContributor(new BrageContributor(value));
+                } catch (InvalidQualifierException e) {
+                    errors.add(e.getMessage());
+                }
                 break;
             case COVERAGE:
                 try {
@@ -81,13 +85,25 @@ public final class XmlImport {
                 }
                 break;
             case DATE:
-                publication.addDate(new BrageDate(value));
+                try {
+                    publication.addDate(new BrageDate(value));
+                } catch (InvalidQualifierException e) {
+                    errors.add(e.getMessage());
+                }
                 break;
             case DESCRIPTION:
-                publication.addDescription(new BrageDescription(value));
+                try {
+                    publication.addDescription(new BrageDescription(value));
+                } catch (InvalidQualifierException e) {
+                    errors.add(e.getMessage());
+                }
                 break;
             case IDENTIFIER:
-                publication.addIdentifier(new BrageIdentifier(value));
+                try {
+                    publication.addIdentifier(new BrageIdentifier(value));
+                } catch (InvalidQualifierException e) {
+                    errors.add(e.getMessage());
+                }
                 break;
             default:
                 logUnknownType(element, originPath);

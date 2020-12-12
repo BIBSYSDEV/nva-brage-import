@@ -3,10 +3,10 @@ package no.unit.nva.importbrage.metamodel.types;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
 
 public enum CreatorType {
@@ -34,8 +34,9 @@ public enum CreatorType {
     public static CreatorType getTypeByName(String typeName) throws InvalidQualifierException {
         return isNull(typeName) || typeName.isEmpty() ? UNQUALIFIED
                 : Arrays.stream(values())
-                .filter(Objects::isNull)
-                .findFirst().orElseThrow(getInvalidQualifierExceptionSupplier(typeName));
+                .filter(value -> nonNull(value.getTypeName()))
+                .findFirst()
+                .orElseThrow(getInvalidQualifierExceptionSupplier(typeName));
     }
 
     private static Supplier<InvalidQualifierException> getInvalidQualifierExceptionSupplier(String typeName) {
