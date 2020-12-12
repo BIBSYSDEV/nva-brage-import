@@ -9,6 +9,7 @@ import no.unit.nva.importbrage.metamodel.BrageDate;
 import no.unit.nva.importbrage.metamodel.BrageDescription;
 import no.unit.nva.importbrage.metamodel.BrageFormat;
 import no.unit.nva.importbrage.metamodel.BrageIdentifier;
+import no.unit.nva.importbrage.metamodel.BrageLanguage;
 import no.unit.nva.importbrage.metamodel.BragePublication;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import org.apache.logging.log4j.LogManager;
@@ -26,6 +27,7 @@ import static no.unit.nva.importbrage.metamodel.types.DateType.DATE;
 import static no.unit.nva.importbrage.metamodel.types.DescriptionType.DESCRIPTION;
 import static no.unit.nva.importbrage.metamodel.types.FormatType.FORMAT;
 import static no.unit.nva.importbrage.metamodel.types.IdentifierType.IDENTIFIER;
+import static no.unit.nva.importbrage.metamodel.types.LanguageType.LANGUAGE;
 
 public final class XmlImport {
 
@@ -111,6 +113,13 @@ public final class XmlImport {
             case IDENTIFIER:
                 try {
                     publication.addIdentifier(new BrageIdentifier(value));
+                } catch (InvalidQualifierException e) {
+                    errors.add(e.getMessage());
+                }
+                break;
+            case LANGUAGE:
+                try {
+                    publication.addLanguage(new BrageLanguage(value));
                 } catch (InvalidQualifierException e) {
                     errors.add(e.getMessage());
                 }
