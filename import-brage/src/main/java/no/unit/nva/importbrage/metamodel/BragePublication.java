@@ -8,7 +8,7 @@ import java.util.Objects;
 
 import static java.util.Objects.isNull;
 
-@SuppressWarnings("PMD.GodClass")
+@SuppressWarnings({"PMD.GodClass", "PMD.TooManyFields"})
 public class BragePublication {
     private List<BrageContributor> contributors;
     private List<BrageCoverage> coverage;
@@ -25,6 +25,7 @@ public class BragePublication {
     private List<BrageSource> sources;
     private List<BrageSubject> subjects;
     private List<BrageTitle> titles;
+    private List<BrageType> types;
 
     public BragePublication() {
 
@@ -88,6 +89,10 @@ public class BragePublication {
 
     public List<BrageTitle> getTitles() {
         return titles;
+    }
+
+    public List<BrageType> getTypes() {
+        return types;
     }
 
     /**
@@ -255,6 +260,17 @@ public class BragePublication {
         titles.add(brageTitle);
     }
 
+    /**
+     * Adds a single type.
+     * @param brageType A type.
+     */
+    public void addType(BrageType brageType) {
+        if (isNull(types)) {
+            types = new ArrayList<>();
+        }
+        types.add(brageType);
+    }
+
     @JacocoGenerated
     @Override
     public boolean equals(Object o) {
@@ -279,7 +295,8 @@ public class BragePublication {
                 && Objects.equals(getRights(), that.getRights())
                 && Objects.equals(getSources(), that.getSources())
                 && Objects.equals(getSubjects(), that.getSubjects())
-                && Objects.equals(getTitles(), that.getTitles());
+                && Objects.equals(getTitles(), that.getTitles())
+                && Objects.equals(getTypes(), that.getTypes());
     }
 
     @JacocoGenerated
@@ -287,6 +304,6 @@ public class BragePublication {
     public int hashCode() {
         return Objects.hash(getContributors(), getCoverage(), getDates(), getIdentifiers(), getDescriptions(),
                 getCreators(), getFormats(), getLanguages(), getProvenances(), getPublishers(), getRelations(),
-                getRights(), getSources(), getSubjects(), getTitles());
+                getRights(), getSources(), getSubjects(), getTitles(), getTypes());
     }
 }

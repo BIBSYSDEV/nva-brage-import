@@ -19,6 +19,7 @@ import no.unit.nva.importbrage.metamodel.BrageRights;
 import no.unit.nva.importbrage.metamodel.BrageSource;
 import no.unit.nva.importbrage.metamodel.BrageSubject;
 import no.unit.nva.importbrage.metamodel.BrageTitle;
+import no.unit.nva.importbrage.metamodel.BrageType;
 import no.unit.nva.importbrage.metamodel.types.ContributorType;
 import no.unit.nva.importbrage.metamodel.types.CoverageType;
 import no.unit.nva.importbrage.metamodel.types.CreatorType;
@@ -35,6 +36,7 @@ import no.unit.nva.importbrage.metamodel.types.RightsType;
 import no.unit.nva.importbrage.metamodel.types.SourceType;
 import no.unit.nva.importbrage.metamodel.types.SubjectType;
 import no.unit.nva.importbrage.metamodel.types.TitleType;
+import no.unit.nva.importbrage.metamodel.types.TypeBasic;
 import nva.commons.utils.log.LogUtils;
 import nva.commons.utils.log.TestAppender;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,6 +73,7 @@ import static no.unit.nva.importbrage.metamodel.types.RightsType.RIGHTS;
 import static no.unit.nva.importbrage.metamodel.types.SourceType.SOURCE;
 import static no.unit.nva.importbrage.metamodel.types.SubjectType.SUBJECT;
 import static no.unit.nva.importbrage.metamodel.types.TitleType.TITLE;
+import static no.unit.nva.importbrage.metamodel.types.TypeBasic.TYPE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
@@ -121,6 +124,7 @@ class XmlImportTest {
         testData.put(SourceType.ARTICLE_NUMBER, "1234");
         testData.put(SubjectType.AGROVOC, "Blenny");
         testData.put(TitleType.UNQUALIFIED, "Marco's lovely hat soaked in sangria");
+        testData.put(TypeBasic.UNQUALIFIED, "Hat studies");
 
         var testPair = generateTestPair(testData);
         BragePublication publication = getBragePublication(testPair.getKey());
@@ -180,6 +184,7 @@ class XmlImportTest {
         elementTypes.addAll(Arrays.asList(SourceType.values()));
         elementTypes.addAll(Arrays.asList(SubjectType.values()));
         elementTypes.addAll(Arrays.asList(TitleType.values()));
+        elementTypes.addAll(Arrays.asList(TypeBasic.values()));
 
         for (ElementType elementType : elementTypes) {
             argumentsBuilder.add(Arguments.of(elementType.getClass().getSimpleName(), elementType));
@@ -202,7 +207,7 @@ class XmlImportTest {
 
     @ParameterizedTest(name = "XmlImport creates report when qualifier is unknown for {0}")
     @ValueSource(strings = {CONTRIBUTOR, COVERAGE, CREATOR, DATE, DESCRIPTION, FORMAT, IDENTIFIER, LANGUAGE,
-            PROVENANCE, PUBLISHER, RELATION, RIGHTS, SOURCE, SUBJECT, TITLE})
+            PROVENANCE, PUBLISHER, RELATION, RIGHTS, SOURCE, SUBJECT, TITLE, TYPE})
     void xmlImportReportsBragePublicationWhenQualifierIsUnknown(String type) throws IOException {
         var dublinCore = generateDublinCoreWithQualifierForElement(type, NONSENSE);
         File file = generateXmlFile(dublinCore);
@@ -266,6 +271,8 @@ class XmlImportTest {
                 return SubjectType.getAllowedValues();
             case TITLE:
                 return TitleType.getAllowedValues();
+            case TYPE:
+                return TypeBasic.getAllowedValues();
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }
@@ -401,6 +408,12 @@ class XmlImportTest {
                 publication.addTitle(new BrageTitle(titleType, value));
                 return;
             }
+            if (type instanceof TypeBasic) {
+                var typeBasic = (TypeBasic) type;
+                dcValues.add(generateDcValueForType(typeBasic, value));
+                publication.addType(new BrageType(typeBasic, value));
+                return;
+            }
             throw new RuntimeException("Cannot generate test data for unknown type");
         });
 
@@ -408,6 +421,10 @@ class XmlImportTest {
         dublinCore.setDcValues(dcValues);
 
         return new AbstractMap.SimpleEntry<>(dublinCore, publication);
+    }
+
+    private DcValue generateDcValueForType(TypeBasic typeBasic, String value) {
+        return getDcValue(value, TYPE, EN_US, typeBasic.getTypeName());
     }
 
     private DcValue generateDcValueForTitle(TitleType titleType, String value) {
