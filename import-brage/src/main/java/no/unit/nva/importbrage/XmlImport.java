@@ -12,6 +12,7 @@ import no.unit.nva.importbrage.metamodel.BrageIdentifier;
 import no.unit.nva.importbrage.metamodel.BrageLanguage;
 import no.unit.nva.importbrage.metamodel.BrageProvenance;
 import no.unit.nva.importbrage.metamodel.BragePublication;
+import no.unit.nva.importbrage.metamodel.BragePublisher;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,6 +31,7 @@ import static no.unit.nva.importbrage.metamodel.types.FormatType.FORMAT;
 import static no.unit.nva.importbrage.metamodel.types.IdentifierType.IDENTIFIER;
 import static no.unit.nva.importbrage.metamodel.types.LanguageType.LANGUAGE;
 import static no.unit.nva.importbrage.metamodel.types.ProvenanceType.PROVENANCE;
+import static no.unit.nva.importbrage.metamodel.types.PublisherType.PUBLISHER;
 
 public final class XmlImport {
 
@@ -129,6 +131,13 @@ public final class XmlImport {
             case PROVENANCE:
                 try {
                     publication.addProvenance(new BrageProvenance(value));
+                } catch (InvalidQualifierException e) {
+                    errors.add(e.getMessage());
+                }
+                break;
+            case PUBLISHER:
+                try {
+                    publication.addPublisher(new BragePublisher(value));
                 } catch (InvalidQualifierException e) {
                     errors.add(e.getMessage());
                 }
