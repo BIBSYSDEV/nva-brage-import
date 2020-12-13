@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import static java.util.Objects.isNull;
 
+@SuppressWarnings("PMD.GodClass")
 public class BragePublication {
     private List<BrageContributor> contributors;
     private List<BrageCoverage> coverage;
@@ -22,6 +23,7 @@ public class BragePublication {
     private List<BrageRelation> relations;
     private List<BrageRights> rights;
     private List<BrageSource> sources;
+    private List<BrageSubject> subjects;
 
     public BragePublication() {
 
@@ -77,6 +79,10 @@ public class BragePublication {
 
     public List<BrageSource> getSources() {
         return sources;
+    }
+
+    public List<BrageSubject> getSubjects() {
+        return subjects;
     }
 
     /**
@@ -222,6 +228,17 @@ public class BragePublication {
         sources.add(brageSource);
     }
 
+    /**
+     * Adds a single subject.
+     * @param brageSubject A subject.
+     */
+    public void addSubject(BrageSubject brageSubject) {
+        if (isNull(subjects)) {
+            subjects = new ArrayList<>();
+        }
+        subjects.add(brageSubject);
+    }
+
     @JacocoGenerated
     @Override
     public boolean equals(Object o) {
@@ -244,7 +261,8 @@ public class BragePublication {
                 && Objects.equals(getPublishers(), that.getPublishers())
                 && Objects.equals(getRelations(), that.getRelations())
                 && Objects.equals(getRights(), that.getRights())
-                && Objects.equals(getSources(), that.getSources());
+                && Objects.equals(getSources(), that.getSources())
+                && Objects.equals(getSubjects(), that.getSubjects());
     }
 
     @JacocoGenerated
@@ -252,6 +270,6 @@ public class BragePublication {
     public int hashCode() {
         return Objects.hash(getContributors(), getCoverage(), getDates(), getIdentifiers(), getDescriptions(),
                 getCreators(), getFormats(), getLanguages(), getProvenances(), getPublishers(), getRelations(),
-                getRights(), getSources());
+                getRights(), getSources(), getSubjects());
     }
 }

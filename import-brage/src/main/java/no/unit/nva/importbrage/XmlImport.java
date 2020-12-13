@@ -16,6 +16,7 @@ import no.unit.nva.importbrage.metamodel.BragePublisher;
 import no.unit.nva.importbrage.metamodel.BrageRelation;
 import no.unit.nva.importbrage.metamodel.BrageRights;
 import no.unit.nva.importbrage.metamodel.BrageSource;
+import no.unit.nva.importbrage.metamodel.BrageSubject;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +39,7 @@ import static no.unit.nva.importbrage.metamodel.types.PublisherType.PUBLISHER;
 import static no.unit.nva.importbrage.metamodel.types.RelationType.RELATION;
 import static no.unit.nva.importbrage.metamodel.types.RightsType.RIGHTS;
 import static no.unit.nva.importbrage.metamodel.types.SourceType.SOURCE;
+import static no.unit.nva.importbrage.metamodel.types.SubjectType.SUBJECT;
 
 public final class XmlImport {
 
@@ -103,7 +105,7 @@ public final class XmlImport {
                 updateLanguage(value, publication);
                 break;
             case PROVENANCE:
-                updaateProvenance(value, publication);
+                updateProvenance(value, publication);
                 break;
             case PUBLISHER:
                 updatePublisher(value, publication);
@@ -117,9 +119,20 @@ public final class XmlImport {
             case SOURCE:
                 updateSources(value, publication);
                 break;
+            case SUBJECT:
+                updateSubjects(value, publication);
+                break;
             default:
                 logUnknownType(element, originPath);
                 break;
+        }
+    }
+
+    private static void updateSubjects(DcValue value, BragePublication publication) {
+        try {
+            publication.addSubject(new BrageSubject(value));
+        } catch (InvalidQualifierException e) {
+            errors.add(e.getMessage());
         }
     }
 
@@ -155,7 +168,7 @@ public final class XmlImport {
         }
     }
 
-    private static void updaateProvenance(DcValue value, BragePublication publication) {
+    private static void updateProvenance(DcValue value, BragePublication publication) {
         try {
             publication.addProvenance(new BrageProvenance(value));
         } catch (InvalidQualifierException e) {

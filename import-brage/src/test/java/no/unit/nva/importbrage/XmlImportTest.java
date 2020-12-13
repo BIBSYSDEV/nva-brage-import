@@ -17,6 +17,7 @@ import no.unit.nva.importbrage.metamodel.BragePublisher;
 import no.unit.nva.importbrage.metamodel.BrageRelation;
 import no.unit.nva.importbrage.metamodel.BrageRights;
 import no.unit.nva.importbrage.metamodel.BrageSource;
+import no.unit.nva.importbrage.metamodel.BrageSubject;
 import no.unit.nva.importbrage.metamodel.types.ContributorType;
 import no.unit.nva.importbrage.metamodel.types.CoverageType;
 import no.unit.nva.importbrage.metamodel.types.CreatorType;
@@ -31,6 +32,7 @@ import no.unit.nva.importbrage.metamodel.types.PublisherType;
 import no.unit.nva.importbrage.metamodel.types.RelationType;
 import no.unit.nva.importbrage.metamodel.types.RightsType;
 import no.unit.nva.importbrage.metamodel.types.SourceType;
+import no.unit.nva.importbrage.metamodel.types.SubjectType;
 import nva.commons.utils.log.LogUtils;
 import nva.commons.utils.log.TestAppender;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,6 +67,7 @@ import static no.unit.nva.importbrage.metamodel.types.PublisherType.PUBLISHER;
 import static no.unit.nva.importbrage.metamodel.types.RelationType.RELATION;
 import static no.unit.nva.importbrage.metamodel.types.RightsType.RIGHTS;
 import static no.unit.nva.importbrage.metamodel.types.SourceType.SOURCE;
+import static no.unit.nva.importbrage.metamodel.types.SubjectType.SUBJECT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
@@ -113,6 +116,7 @@ class XmlImportTest {
         testData.put(RelationType.HAS_PART, "Some other bit");
         testData.put(RightsType.HOLDER, "Mr Holder's older brother");
         testData.put(SourceType.ARTICLE_NUMBER, "1234");
+        testData.put(SubjectType.AGROVOC, "Blenny");
 
         var testPair = generateTestPair(testData);
         BragePublication publication = getBragePublication(testPair.getKey());
@@ -170,6 +174,7 @@ class XmlImportTest {
         elementTypes.addAll(Arrays.asList(RelationType.values()));
         elementTypes.addAll(Arrays.asList(RightsType.values()));
         elementTypes.addAll(Arrays.asList(SourceType.values()));
+        elementTypes.addAll(Arrays.asList(SubjectType.values()));
 
         for (ElementType elementType : elementTypes) {
             argumentsBuilder.add(Arguments.of(elementType.getClass().getSimpleName(), elementType));
@@ -192,7 +197,7 @@ class XmlImportTest {
 
     @ParameterizedTest(name = "XmlImport creates report when qualifier is unknown for {0}")
     @ValueSource(strings = {CONTRIBUTOR, COVERAGE, CREATOR, DATE, DESCRIPTION, FORMAT, IDENTIFIER, LANGUAGE,
-            PROVENANCE, PUBLISHER, RELATION, RIGHTS, SOURCE})
+            PROVENANCE, PUBLISHER, RELATION, RIGHTS, SOURCE, SUBJECT})
     void xmlImportReportsBragePublicationWhenQualifierIsUnknown(String type) throws IOException {
         var dublinCore = generateDublinCoreWithQualifierForElement(type, NONSENSE);
         File file = generateXmlFile(dublinCore);
@@ -252,6 +257,8 @@ class XmlImportTest {
                 return RightsType.getAllowedValues();
             case SOURCE:
                 return SourceType.getAllowedValues();
+            case SUBJECT:
+                return SubjectType.getAllowedValues();
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }
@@ -375,6 +382,12 @@ class XmlImportTest {
                 publication.addSource(new BrageSource(sourceType, value));
                 return;
             }
+            if (type instanceof SubjectType) {
+                var subjectType = (SubjectType) type;
+                dcValues.add(generateDcValueForSubject(subjectType, value));
+                publication.addSubject(new BrageSubject(subjectType, value));
+                return;
+            }
             throw new RuntimeException("Cannot generate test data for unknown type");
         });
 
@@ -382,6 +395,15 @@ class XmlImportTest {
         dublinCore.setDcValues(dcValues);
 
         return new AbstractMap.SimpleEntry<>(dublinCore, publication);
+    }
+
+    private DcValue generateDcValueForSubject(SubjectType subjectType, String value) {
+        return new DcValueBuilder()
+                .withElement(SUBJECT)
+                .withLanguage(EN_US)
+                .withQualifier(subjectType.getTypeName())
+                .withValue(value)
+                .build();
     }
 
     private DcValue generateDcValueForSource(SourceType sourceType, String value) {
