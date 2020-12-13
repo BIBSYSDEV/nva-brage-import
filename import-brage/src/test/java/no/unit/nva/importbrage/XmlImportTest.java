@@ -18,6 +18,7 @@ import no.unit.nva.importbrage.metamodel.BrageRelation;
 import no.unit.nva.importbrage.metamodel.BrageRights;
 import no.unit.nva.importbrage.metamodel.BrageSource;
 import no.unit.nva.importbrage.metamodel.BrageSubject;
+import no.unit.nva.importbrage.metamodel.BrageTitle;
 import no.unit.nva.importbrage.metamodel.types.ContributorType;
 import no.unit.nva.importbrage.metamodel.types.CoverageType;
 import no.unit.nva.importbrage.metamodel.types.CreatorType;
@@ -33,6 +34,7 @@ import no.unit.nva.importbrage.metamodel.types.RelationType;
 import no.unit.nva.importbrage.metamodel.types.RightsType;
 import no.unit.nva.importbrage.metamodel.types.SourceType;
 import no.unit.nva.importbrage.metamodel.types.SubjectType;
+import no.unit.nva.importbrage.metamodel.types.TitleType;
 import nva.commons.utils.log.LogUtils;
 import nva.commons.utils.log.TestAppender;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,6 +70,7 @@ import static no.unit.nva.importbrage.metamodel.types.RelationType.RELATION;
 import static no.unit.nva.importbrage.metamodel.types.RightsType.RIGHTS;
 import static no.unit.nva.importbrage.metamodel.types.SourceType.SOURCE;
 import static no.unit.nva.importbrage.metamodel.types.SubjectType.SUBJECT;
+import static no.unit.nva.importbrage.metamodel.types.TitleType.TITLE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
@@ -117,6 +120,7 @@ class XmlImportTest {
         testData.put(RightsType.HOLDER, "Mr Holder's older brother");
         testData.put(SourceType.ARTICLE_NUMBER, "1234");
         testData.put(SubjectType.AGROVOC, "Blenny");
+        testData.put(TitleType.UNQUALIFIED, "Marco's lovely hat soaked in sangria");
 
         var testPair = generateTestPair(testData);
         BragePublication publication = getBragePublication(testPair.getKey());
@@ -175,6 +179,7 @@ class XmlImportTest {
         elementTypes.addAll(Arrays.asList(RightsType.values()));
         elementTypes.addAll(Arrays.asList(SourceType.values()));
         elementTypes.addAll(Arrays.asList(SubjectType.values()));
+        elementTypes.addAll(Arrays.asList(TitleType.values()));
 
         for (ElementType elementType : elementTypes) {
             argumentsBuilder.add(Arguments.of(elementType.getClass().getSimpleName(), elementType));
@@ -197,7 +202,7 @@ class XmlImportTest {
 
     @ParameterizedTest(name = "XmlImport creates report when qualifier is unknown for {0}")
     @ValueSource(strings = {CONTRIBUTOR, COVERAGE, CREATOR, DATE, DESCRIPTION, FORMAT, IDENTIFIER, LANGUAGE,
-            PROVENANCE, PUBLISHER, RELATION, RIGHTS, SOURCE, SUBJECT})
+            PROVENANCE, PUBLISHER, RELATION, RIGHTS, SOURCE, SUBJECT, TITLE})
     void xmlImportReportsBragePublicationWhenQualifierIsUnknown(String type) throws IOException {
         var dublinCore = generateDublinCoreWithQualifierForElement(type, NONSENSE);
         File file = generateXmlFile(dublinCore);
@@ -259,6 +264,8 @@ class XmlImportTest {
                 return SourceType.getAllowedValues();
             case SUBJECT:
                 return SubjectType.getAllowedValues();
+            case TITLE:
+                return TitleType.getAllowedValues();
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }
@@ -388,6 +395,12 @@ class XmlImportTest {
                 publication.addSubject(new BrageSubject(subjectType, value));
                 return;
             }
+            if (type instanceof TitleType) {
+                var titleType = (TitleType) type;
+                dcValues.add(generateDcValueForTitle(titleType, value));
+                publication.addTitle(new BrageTitle(titleType, value));
+                return;
+            }
             throw new RuntimeException("Cannot generate test data for unknown type");
         });
 
@@ -397,128 +410,71 @@ class XmlImportTest {
         return new AbstractMap.SimpleEntry<>(dublinCore, publication);
     }
 
+    private DcValue generateDcValueForTitle(TitleType titleType, String value) {
+        return getDcValue(value, TITLE, EN_US, titleType.getTypeName());
+    }
+
     private DcValue generateDcValueForSubject(SubjectType subjectType, String value) {
-        return new DcValueBuilder()
-                .withElement(SUBJECT)
-                .withLanguage(EN_US)
-                .withQualifier(subjectType.getTypeName())
-                .withValue(value)
-                .build();
+        return getDcValue(value, SUBJECT, EN_US, subjectType.getTypeName());
     }
 
     private DcValue generateDcValueForSource(SourceType sourceType, String value) {
-        return new DcValueBuilder()
-                .withElement(SOURCE)
-                .withLanguage(EN_US)
-                .withQualifier(sourceType.getTypeName())
-                .withValue(value)
-                .build();
+        return getDcValue(value, SOURCE, EN_US, sourceType.getTypeName());
     }
 
     private DcValue generateDcValueForRights(RightsType rightsType, String value) {
-        return new DcValueBuilder()
-                .withElement(RIGHTS)
-                .withLanguage(EN_US)
-                .withQualifier(rightsType.getTypeName())
-                .withValue(value)
-                .build();
+        return getDcValue(value, RIGHTS, EN_US, rightsType.getTypeName());
     }
 
     private DcValue generateDcValueForRelation(RelationType relationType, String value) {
-        return new DcValueBuilder()
-                .withElement(RELATION)
-                .withLanguage(EN_US)
-                .withQualifier(relationType.getTypeName())
-                .withValue(value)
-                .build();
+        return getDcValue(value, RELATION, EN_US, relationType.getTypeName());
     }
 
     private DcValue generateDcValueForPublisher(PublisherType publisherType, String value) {
-        return new DcValueBuilder()
-                .withElement(PUBLISHER)
-                .withLanguage(EN_US)
-                .withQualifier(publisherType.getTypeName())
-                .withValue(value)
-                .build();
+        return getDcValue(value, PUBLISHER, EN_US, publisherType.getTypeName());
     }
 
     private DcValue generateDcValueForLanguage(LanguageType languageType, String value) {
-        return new DcValueBuilder()
-                .withElement(LANGUAGE)
-                .withLanguage(EN_US)
-                .withQualifier(languageType.getTypeName())
-                .withValue(value)
-                .build();
+        return getDcValue(value, LANGUAGE, EN_US, languageType.getTypeName());
     }
 
     private DcValue generateDcValueForFormat(FormatType formatType, String value) {
-        return new DcValueBuilder()
-                .withElement(FORMAT)
-                .withLanguage(EN_US)
-                .withQualifier(formatType.getTypeName())
-                .withValue(value)
-                .build();
+        return getDcValue(value, FORMAT, EN_US, formatType.getTypeName());
     }
 
     private DcValue generateDcValueForDescription(DescriptionType descriptionType, String value) {
-        return new DcValueBuilder()
-                .withElement(DESCRIPTION)
-                .withLanguage(EN_US)
-                .withQualifier(descriptionType.getTypeName())
-                .withValue(value)
-                .build();
+        return getDcValue(value, DESCRIPTION, EN_US, descriptionType.getTypeName());
     }
 
     private DcValue generateDcValueForIdentifier(IdentifierType uriType, String value) {
-        return new DcValueBuilder()
-                .withElement(IDENTIFIER)
-                .withLanguage(EN_US)
-                .withQualifier(uriType.getTypeName())
-                .withValue(value)
-                .build();
+        return getDcValue(value, IDENTIFIER, EN_US, uriType.getTypeName());
     }
 
     private DcValue generateDcValueForCreator(CreatorType creatorType, String value) {
-        return new DcValueBuilder()
-                .withElement(CREATOR)
-                .withLanguage(EN_US)
-                .withQualifier(creatorType.getTypeName())
-                .withValue(value)
-                .build();
+        return getDcValue(value, CREATOR, EN_US, creatorType.getTypeName());
     }
 
     private DcValue generateDcValueForDate(DateType dateType, String value) {
-        return new DcValueBuilder()
-                .withElement(DATE)
-                .withLanguage(null)
-                .withQualifier(dateType.getTypeName())
-                .withValue(value)
-                .build();
+        return getDcValue(value, DATE, null, dateType.getTypeName());
     }
 
     private DcValue generateDcValueForCoverage(CoverageType coverageType, String value) {
-        return new DcValueBuilder()
-                .withElement(COVERAGE)
-                .withLanguage(EN_US)
-                .withQualifier(coverageType.getTypeName())
-                .withValue(value)
-                .build();
+        return getDcValue(value, COVERAGE, EN_US, coverageType.getTypeName());
     }
 
     private DcValue generateDcValueForContributor(ContributorType contributorType, String contributorName) {
-        return new DcValueBuilder()
-                .withElement(CONTRIBUTOR)
-                .withLanguage(EN_US)
-                .withQualifier(contributorType.getTypeName())
-                .withValue(contributorName)
-                .build();
+        return getDcValue(contributorName, CONTRIBUTOR, EN_US, contributorType.getTypeName());
     }
 
     private DcValue generateDcValueForProvenance(ProvenanceType provenanceType, String value) {
+        return getDcValue(value, PROVENANCE, EN_US, provenanceType.getTypeName());
+    }
+
+    private DcValue getDcValue(String value, String subject, String enUs, String typeName) {
         return new DcValueBuilder()
-                .withElement(PROVENANCE)
-                .withLanguage(EN_US)
-                .withQualifier(provenanceType.getTypeName())
+                .withElement(subject)
+                .withLanguage(enUs)
+                .withQualifier(typeName)
                 .withValue(value)
                 .build();
     }
