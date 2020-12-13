@@ -21,6 +21,7 @@ public class BragePublication {
     private List<BragePublisher> publishers;
     private List<BrageRelation> relations;
     private List<BrageRights> rights;
+    private List<BrageSource> sources;
 
     public BragePublication() {
 
@@ -72,6 +73,10 @@ public class BragePublication {
 
     public List<BrageRights> getRights() {
         return rights;
+    }
+
+    public List<BrageSource> getSources() {
+        return sources;
     }
 
     /**
@@ -206,6 +211,17 @@ public class BragePublication {
         rights.add(brageRights);
     }
 
+    /**
+     * Adds a single source.
+     * @param brageSource A source.
+     */
+    public void addSource(BrageSource brageSource) {
+        if (isNull(sources)) {
+            sources = new ArrayList<>();
+        }
+        sources.add(brageSource);
+    }
+
     @JacocoGenerated
     @Override
     public boolean equals(Object o) {
@@ -227,7 +243,8 @@ public class BragePublication {
                 && Objects.equals(getProvenances(), that.getProvenances())
                 && Objects.equals(getPublishers(), that.getPublishers())
                 && Objects.equals(getRelations(), that.getRelations())
-                && Objects.equals(getRights(), that.getRights());
+                && Objects.equals(getRights(), that.getRights())
+                && Objects.equals(getSources(), that.getSources());
     }
 
     @JacocoGenerated
@@ -235,6 +252,6 @@ public class BragePublication {
     public int hashCode() {
         return Objects.hash(getContributors(), getCoverage(), getDates(), getIdentifiers(), getDescriptions(),
                 getCreators(), getFormats(), getLanguages(), getProvenances(), getPublishers(), getRelations(),
-                getRights());
+                getRights(), getSources());
     }
 }
