@@ -25,6 +25,11 @@ public enum DateType implements ElementType {
         return type;
     }
 
+    @Override
+    public boolean isLanguageBased() {
+        return false;
+    }
+
     /**
      * Get the equivalent DateType by its string representation.
      *

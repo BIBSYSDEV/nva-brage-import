@@ -7,7 +7,7 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageCreator {
+public class BrageCreator extends BrageValue {
 
     /*
       Generated from XML like:
@@ -20,7 +20,6 @@ public class BrageCreator {
     */
 
     private final CreatorType creatorType;
-    private final String value;
 
     public BrageCreator(DcValue value) throws InvalidQualifierException {
         this(value.getQualifier(), value.getValue());
@@ -31,16 +30,12 @@ public class BrageCreator {
     }
 
     public BrageCreator(CreatorType creatorType, String value) {
+        super(value);
         this.creatorType = creatorType;
-        this.value = value;
     }
 
     public CreatorType getCreatorType() {
         return creatorType;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -52,14 +47,16 @@ public class BrageCreator {
         if (!(o instanceof BrageCreator)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BrageCreator that = (BrageCreator) o;
-        return getCreatorType() == that.getCreatorType()
-                && Objects.equals(getValue(), that.getValue());
+        return getCreatorType() == that.getCreatorType();
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getCreatorType(), getValue());
+        return Objects.hash(super.hashCode(), getCreatorType());
     }
 }

@@ -17,6 +17,11 @@ public enum PublisherType implements ElementType {
         return typeName;
     }
 
+    @Override
+    public boolean isLanguageBased() {
+        return true;
+    }
+
     /**
      * Get the equivalent PublisherType by its string representation.
      *

@@ -23,6 +23,11 @@ public enum SourceType implements ElementType {
         return typeName;
     }
 
+    @Override
+    public boolean isLanguageBased() {
+        return true;
+    }
+
     /**
      * Get the equivalent SourceType by its string representation.
      *

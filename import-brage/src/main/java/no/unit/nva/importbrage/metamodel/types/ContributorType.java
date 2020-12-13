@@ -24,6 +24,11 @@ public enum ContributorType implements ElementType {
         return typeName;
     }
 
+    @Override
+    public boolean isLanguageBased() {
+        return false;
+    }
+
     /**
      * Get the equivalent ContributorType by its string representation.
      *

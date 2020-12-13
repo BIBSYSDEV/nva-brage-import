@@ -18,6 +18,11 @@ public enum LanguageType implements ElementType {
         return typeName;
     }
 
+    @Override
+    public boolean isLanguageBased() {
+        return true;
+    }
+
     /**
      * Get the equivalent LanguageType by its string representation.
      *

@@ -17,6 +17,11 @@ public enum ProvenanceType implements ElementType {
         return typeName;
     }
 
+    @Override
+    public boolean isLanguageBased() {
+        return true;
+    }
+
     /**
      * Get the equivalent ProvenanceType by its string representation.
      *

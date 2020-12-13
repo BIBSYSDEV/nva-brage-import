@@ -7,29 +7,24 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageProvenance {
+public class BrageProvenance extends BrageLanguageValue {
     private final ProvenanceType provenanceType;
-    private final String value;
 
     public BrageProvenance(DcValue value) throws InvalidQualifierException {
-        this(value.getQualifier(), value.getValue());
+        this(value.getQualifier(), value.getValue(), value.getLanguage());
     }
 
-    public BrageProvenance(String provenanceType, String value) throws InvalidQualifierException {
-        this(ProvenanceType.getTypeByName(provenanceType), value);
+    public BrageProvenance(String provenanceType, String value, String language) throws InvalidQualifierException {
+        this(ProvenanceType.getTypeByName(provenanceType), value, language);
     }
 
-    public BrageProvenance(ProvenanceType provenanceType, String value) {
+    public BrageProvenance(ProvenanceType provenanceType, String value, String laanguage) {
+        super(value, laanguage);
         this.provenanceType = provenanceType;
-        this.value = value;
     }
 
     public ProvenanceType getProvenanceType() {
         return provenanceType;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -41,14 +36,16 @@ public class BrageProvenance {
         if (!(o instanceof BrageProvenance)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BrageProvenance that = (BrageProvenance) o;
-        return getProvenanceType() == that.getProvenanceType()
-                && Objects.equals(getValue(), that.getValue());
+        return getProvenanceType() == that.getProvenanceType();
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getProvenanceType(), getValue());
+        return Objects.hash(super.hashCode(), getProvenanceType());
     }
 }

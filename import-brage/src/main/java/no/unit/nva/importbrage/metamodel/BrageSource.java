@@ -7,29 +7,24 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageSource {
+public class BrageSource extends BrageLanguageValue {
     private final SourceType sourceType;
-    private final String value;
 
     public BrageSource(DcValue value) throws InvalidQualifierException {
-        this(value.getQualifier(), value.getValue());
+        this(value.getQualifier(), value.getValue(), value.getLanguage());
     }
 
-    public BrageSource(String qualifier, String value) throws InvalidQualifierException {
-        this(SourceType.getTypeByName(qualifier), value);
+    public BrageSource(String qualifier, String value, String language) throws InvalidQualifierException {
+        this(SourceType.getTypeByName(qualifier), value, language);
     }
 
-    public BrageSource(SourceType sourceType, String value) {
+    public BrageSource(SourceType sourceType, String value, String language) {
+        super(value, language);
         this.sourceType = sourceType;
-        this.value = value;
     }
 
     public SourceType getSourceType() {
         return sourceType;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -41,14 +36,16 @@ public class BrageSource {
         if (!(o instanceof BrageSource)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BrageSource that = (BrageSource) o;
-        return getSourceType() == that.getSourceType()
-                && Objects.equals(getValue(), that.getValue());
+        return getSourceType() == that.getSourceType();
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getSourceType(), getValue());
+        return Objects.hash(super.hashCode(), getSourceType());
     }
 }

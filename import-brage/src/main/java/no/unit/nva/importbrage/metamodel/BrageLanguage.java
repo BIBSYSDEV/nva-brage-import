@@ -7,29 +7,24 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageLanguage {
+public class BrageLanguage extends BrageLanguageValue {
     private final LanguageType languageType;
-    private final String value;
 
     public BrageLanguage(DcValue value) throws InvalidQualifierException {
-        this(value.getQualifier(), value.getValue());
+        this(value.getQualifier(), value.getValue(), value.getLanguage());
     }
 
-    public BrageLanguage(String languageType, String value) throws InvalidQualifierException {
-        this(LanguageType.getTypeByName(languageType), value);
+    public BrageLanguage(String languageType, String value, String language) throws InvalidQualifierException {
+        this(LanguageType.getTypeByName(languageType), value, language);
     }
 
-    public BrageLanguage(LanguageType languageType, String value) {
+    public BrageLanguage(LanguageType languageType, String value, String language) {
+        super(value, language);
         this.languageType = languageType;
-        this.value = value;
     }
 
     public LanguageType getLanguageType() {
         return languageType;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -41,14 +36,16 @@ public class BrageLanguage {
         if (!(o instanceof BrageLanguage)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BrageLanguage that = (BrageLanguage) o;
-        return getLanguageType() == that.getLanguageType()
-                && Objects.equals(getValue(), that.getValue());
+        return getLanguageType() == that.getLanguageType();
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getLanguageType(), getValue());
+        return Objects.hash(super.hashCode(), getLanguageType());
     }
 }

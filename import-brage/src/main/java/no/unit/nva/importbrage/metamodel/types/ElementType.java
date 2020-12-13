@@ -15,6 +15,8 @@ public interface ElementType {
 
     String getTypeName();
 
+    boolean isLanguageBased();
+
     /**
      * Gets a ElementType implementation by its string name.
      *

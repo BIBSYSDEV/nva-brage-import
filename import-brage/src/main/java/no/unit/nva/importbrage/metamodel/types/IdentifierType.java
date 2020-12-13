@@ -3,29 +3,36 @@ package no.unit.nva.importbrage.metamodel.types;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 
 public enum IdentifierType implements ElementType {
-    CITATION("citation"),
-    CRISTIN("cristin"),
-    DOI("doi"),
-    ISBN("isbn"),
-    ISMN("ismn"),
-    ISSN("issn"),
-    OTHER("other"),
-    PMID("pmid"),
-    SLUG("slug"),
-    URI("uri"),
-    URN("urn"),
-    UNQUALIFIED(null);
+    CITATION("citation", true),
+    CRISTIN("cristin", false),
+    DOI("doi", false),
+    ISBN("isbn", false),
+    ISMN("ismn", false),
+    ISSN("issn", false),
+    OTHER("other", false),
+    PMID("pmid", false),
+    SLUG("slug", false),
+    URI("uri", false),
+    URN("urn", false),
+    UNQUALIFIED(null, false);
 
     public static final String IDENTIFIER = "identifier";
     private final String type;
+    private final boolean languageBased;
 
-    IdentifierType(String type) {
+    IdentifierType(String type, boolean languageBased) {
         this.type = type;
+        this.languageBased = languageBased;
     }
 
     @Override
     public String getTypeName() {
         return type;
+    }
+
+    @Override
+    public boolean isLanguageBased() {
+        return this.languageBased;
     }
 
     /**

@@ -7,7 +7,7 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageContributor {
+public class BrageContributor extends BrageValue {
     /*
       Generated from an XML element like:
 
@@ -27,7 +27,6 @@ public class BrageContributor {
      */
 
     private final ContributorType contributorType;
-    private final String value;
 
     public BrageContributor(DcValue value) throws InvalidQualifierException {
         this(value.getQualifier(), value.getValue());
@@ -38,16 +37,12 @@ public class BrageContributor {
     }
 
     public BrageContributor(ContributorType contributorType, String value) {
+        super(value);
         this.contributorType = contributorType;
-        this.value = value;
     }
 
     public ContributorType getContributorType() {
         return contributorType;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated

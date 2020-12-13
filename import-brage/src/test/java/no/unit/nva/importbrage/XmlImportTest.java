@@ -3,6 +3,7 @@ package no.unit.nva.importbrage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import no.unit.nva.importbrage.helpers.BrageTestValue;
 import no.unit.nva.importbrage.metamodel.BrageContributor;
 import no.unit.nva.importbrage.metamodel.BrageCoverage;
 import no.unit.nva.importbrage.metamodel.BrageCreator;
@@ -53,9 +54,7 @@ import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException.MESSAGE_TEMPLATE;
@@ -92,9 +91,9 @@ class XmlImportTest {
     public static final String ANY_DATE = "2020-02-01";
     private static final String EN_US = "en_US";
     public static final String DC = "dc";
-    public static final String DESCRIPTION_STRING = "Something resembling a description!";
     public static final String DELIMITER = ", ";
     public static final String NONSENSE = "nonsense";
+    public static final String DESCRIPTION_EXAMPLE = "A long descriptive text that stands as a description";
     public static TestAppender logger;
     public static final ObjectMapper mapper = new XmlMapper();
 
@@ -108,23 +107,24 @@ class XmlImportTest {
 
     @Test
     void xmlImportLoadsData() throws IOException {
-        var testData = new HashMap<ElementType, String>();
-        testData.put(ContributorType.AUTHOR, RANDY_OLSON);
-        testData.put(CoverageType.SPATIAL, NORWAY);
-        testData.put(CreatorType.UNQUALIFIED, RANDY_OLSON);
-        testData.put(DateType.ACCESSIONED, ANY_DATE);
-        testData.put(IdentifierType.URI, EXAMPLE_URI);
-        testData.put(DescriptionType.ABSTRACT, "A long descriptive text that stands as a description");
-        testData.put(FormatType.EXTENT, "232");
-        testData.put(LanguageType.ISO, "en");
-        testData.put(ProvenanceType.UNQUALIFIED, "Stolen goods");
-        testData.put(PublisherType.UNQUALIFIED, "Ratty McFeeson publishing LLC");
-        testData.put(RelationType.HAS_PART, "Some other bit");
-        testData.put(RightsType.HOLDER, "Mr Holder's older brother");
-        testData.put(SourceType.ARTICLE_NUMBER, "1234");
-        testData.put(SubjectType.AGROVOC, "Blenny");
-        testData.put(TitleType.UNQUALIFIED, "Marco's lovely hat soaked in sangria");
-        testData.put(TypeBasic.UNQUALIFIED, "Hat studies");
+
+        var testData = new ArrayList<BrageTestValue>();
+        testData.add(new BrageTestValue(ContributorType.AUTHOR, RANDY_OLSON, null));
+        testData.add(new BrageTestValue(CoverageType.SPATIAL, NORWAY, EN_US));
+        testData.add(new BrageTestValue(CreatorType.UNQUALIFIED, RANDY_OLSON, null));
+        testData.add(new BrageTestValue(DateType.ACCESSIONED, ANY_DATE, null));
+        testData.add(new BrageTestValue(IdentifierType.URI, EXAMPLE_URI, null));
+        testData.add(new BrageTestValue(DescriptionType.ABSTRACT, DESCRIPTION_EXAMPLE, EN_US));
+        testData.add(new BrageTestValue(FormatType.EXTENT, "232", null));
+        testData.add(new BrageTestValue(LanguageType.ISO, "en", null));
+        testData.add(new BrageTestValue(ProvenanceType.UNQUALIFIED, "Stolen goods", null));
+        testData.add(new BrageTestValue(PublisherType.UNQUALIFIED, "Ratty McFeeson publishing LLC", null));
+        testData.add(new BrageTestValue(RelationType.HAS_PART, "Some other bit", null));
+        testData.add(new BrageTestValue(RightsType.HOLDER, "Mr Holder's older brother", null));
+        testData.add(new BrageTestValue(SourceType.ARTICLE_NUMBER, "1234", null));
+        testData.add(new BrageTestValue(SubjectType.AGROVOC, "Blenny", null));
+        testData.add(new BrageTestValue(TitleType.UNQUALIFIED, "Marco's lovely hat soaked in sangria", null));
+        testData.add(new BrageTestValue(TypeBasic.UNQUALIFIED, "Hat studies", null));
 
         var testPair = generateTestPair(testData);
         BragePublication publication = getBragePublication(testPair.getKey());
@@ -160,9 +160,9 @@ class XmlImportTest {
     @SuppressWarnings("unused") // we use "name" in the display name
     @ParameterizedTest(name = "XmlImport allows name {0} — {1}")
     @MethodSource("elementTypeProvider")
-    void xmlImportGeneratesBragePublicationWhenElementTypesArePresent(String name, ElementType type)
+    void xmlImportGeneratesBragePublicationWhenElementTypesArePresent(String value, ElementType type)
             throws IOException {
-        var testPair = generateTestPair(Map.of(type, DESCRIPTION_STRING));
+        var testPair = generateSimpleTestPair(type, value);
         BragePublication publication = getBragePublication(testPair.getKey());
         assertThat(publication, equalTo(testPair.getValue()));
     }
@@ -221,9 +221,16 @@ class XmlImportTest {
 
     @Test
     void xmlImportGeneratesBragePublicationWhenCreatorIsUnqualified() throws IOException {
-        var testPair = generateTestPair(Map.of(CreatorType.UNQUALIFIED, RANDY_OLSON));
+        var testPair = generateSimpleTestPair(CreatorType.UNQUALIFIED, RANDY_OLSON);
         BragePublication publication = getBragePublication(testPair.getKey());
         assertThat(publication, is(equalTo(testPair.getValue())));
+    }
+
+    private AbstractMap.SimpleEntry<DublinCore, BragePublication> generateSimpleTestPair(
+            ElementType type, String value) {
+        var language = type.isLanguageBased() ? EN_US : null;
+        return generateTestPair(
+                List.of(new BrageTestValue(type, value, language)));
     }
 
     @Test
@@ -313,11 +320,14 @@ class XmlImportTest {
     }
 
     private AbstractMap.SimpleEntry<DublinCore, BragePublication> generateTestPair(
-            Map<ElementType, String> data) {
+            List<BrageTestValue> data) {
         List<DcValue> dcValues = new ArrayList<>();
         BragePublication publication = new BragePublication();
 
-        data.forEach((type, value) -> {
+        data.forEach((element) -> {
+            var type = element.getQualifier();
+            var value = element.getValue();
+            var language = element.getLanguage();
             if (type instanceof ContributorType) {
                 var contributorType = (ContributorType) type;
                 dcValues.add(generateDcValueForContributor(contributorType, value));
@@ -326,8 +336,8 @@ class XmlImportTest {
             }
             if (type instanceof CoverageType) {
                 var coverageType = (CoverageType) type;
-                dcValues.add(generateDcValueForCoverage(coverageType, value));
-                publication.addCoverage(new BrageCoverage(coverageType, value));
+                dcValues.add(generateDcValueForCoverage(coverageType, value, language));
+                publication.addCoverage(new BrageCoverage(coverageType, value, EN_US));
                 return;
             }
             if (type instanceof CreatorType) {
@@ -344,14 +354,14 @@ class XmlImportTest {
             }
             if (type instanceof DescriptionType) {
                 var descriptionType = (DescriptionType) type;
-                dcValues.add(generateDcValueForDescription(descriptionType, value));
-                publication.addDescription(new BrageDescription(descriptionType, value));
+                dcValues.add(generateDcValueForDescription(descriptionType, value, language));
+                publication.addDescription(new BrageDescription(descriptionType, value, language));
                 return;
             }
             if (type instanceof IdentifierType) {
                 var identifierType = (IdentifierType) type;
-                dcValues.add(generateDcValueForIdentifier(identifierType, value));
-                publication.addIdentifier(new BrageIdentifier(identifierType, value));
+                dcValues.add(generateDcValueForIdentifier(identifierType, value, language));
+                publication.addIdentifier(new BrageIdentifier(identifierType, value, language));
                 return;
             }
             if (type instanceof FormatType) {
@@ -362,56 +372,56 @@ class XmlImportTest {
             }
             if (type instanceof LanguageType) {
                 var languageType = (LanguageType) type;
-                dcValues.add(generateDcValueForLanguage(languageType, value));
-                publication.addLanguage(new BrageLanguage(languageType, value));
+                dcValues.add(generateDcValueForLanguage(languageType, value, language));
+                publication.addLanguage(new BrageLanguage(languageType, value, language));
                 return;
             }
             if (type instanceof ProvenanceType) {
                 var provenanceType = (ProvenanceType) type;
-                dcValues.add(generateDcValueForProvenance(provenanceType, value));
-                publication.addProvenance(new BrageProvenance(provenanceType, value));
+                dcValues.add(generateDcValueForProvenance(provenanceType, value, language));
+                publication.addProvenance(new BrageProvenance(provenanceType, value, language));
                 return;
             }
             if (type instanceof PublisherType) {
                 var publisherType = (PublisherType) type;
-                dcValues.add(generateDcValueForPublisher(publisherType, value));
-                publication.addPublisher(new BragePublisher(publisherType, value));
+                dcValues.add(generateDcValueForPublisher(publisherType, value, language));
+                publication.addPublisher(new BragePublisher(publisherType, value, language));
                 return;
             }
             if (type instanceof RelationType) {
                 var relationType = (RelationType) type;
-                dcValues.add(generateDcValueForRelation(relationType, value));
-                publication.addRelation(new BrageRelation(relationType, value));
+                dcValues.add(generateDcValueForRelation(relationType, value, language));
+                publication.addRelation(new BrageRelation(relationType, value, language));
                 return;
             }
             if (type instanceof RightsType) {
                 var rightsType = (RightsType) type;
-                dcValues.add(generateDcValueForRights(rightsType, value));
-                publication.addRights(new BrageRights(rightsType, value));
+                dcValues.add(generateDcValueForRights(rightsType, value, language));
+                publication.addRights(new BrageRights(rightsType, value, language));
                 return;
             }
             if (type instanceof SourceType) {
                 var sourceType = (SourceType) type;
-                dcValues.add(generateDcValueForSource(sourceType, value));
-                publication.addSource(new BrageSource(sourceType, value));
+                dcValues.add(generateDcValueForSource(sourceType, value, language));
+                publication.addSource(new BrageSource(sourceType, value, language));
                 return;
             }
             if (type instanceof SubjectType) {
                 var subjectType = (SubjectType) type;
-                dcValues.add(generateDcValueForSubject(subjectType, value));
-                publication.addSubject(new BrageSubject(subjectType, value));
+                dcValues.add(generateDcValueForSubject(subjectType, value, language));
+                publication.addSubject(new BrageSubject(subjectType, value, language));
                 return;
             }
             if (type instanceof TitleType) {
                 var titleType = (TitleType) type;
-                dcValues.add(generateDcValueForTitle(titleType, value));
-                publication.addTitle(new BrageTitle(titleType, value));
+                dcValues.add(generateDcValueForTitle(titleType, value, language));
+                publication.addTitle(new BrageTitle(titleType, value, language));
                 return;
             }
             if (type instanceof TypeBasic) {
                 var typeBasic = (TypeBasic) type;
-                dcValues.add(generateDcValueForType(typeBasic, value));
-                publication.addType(new BrageType(typeBasic, value));
+                dcValues.add(generateDcValueForType(typeBasic, value, language));
+                publication.addType(new BrageType(typeBasic, value, language));
                 return;
             }
             throw new RuntimeException("Cannot generate test data for unknown type");
@@ -423,68 +433,68 @@ class XmlImportTest {
         return new AbstractMap.SimpleEntry<>(dublinCore, publication);
     }
 
-    private DcValue generateDcValueForType(TypeBasic typeBasic, String value) {
-        return getDcValue(value, TYPE, EN_US, typeBasic.getTypeName());
+    private DcValue generateDcValueForType(TypeBasic typeBasic, String value, String language) {
+        return getDcValue(value, TYPE, language, typeBasic.getTypeName());
     }
 
-    private DcValue generateDcValueForTitle(TitleType titleType, String value) {
-        return getDcValue(value, TITLE, EN_US, titleType.getTypeName());
+    private DcValue generateDcValueForTitle(TitleType titleType, String value, String language) {
+        return getDcValue(value, TITLE, language, titleType.getTypeName());
     }
 
-    private DcValue generateDcValueForSubject(SubjectType subjectType, String value) {
-        return getDcValue(value, SUBJECT, EN_US, subjectType.getTypeName());
+    private DcValue generateDcValueForSubject(SubjectType subjectType, String value, String language) {
+        return getDcValue(value, SUBJECT, language, subjectType.getTypeName());
     }
 
-    private DcValue generateDcValueForSource(SourceType sourceType, String value) {
-        return getDcValue(value, SOURCE, EN_US, sourceType.getTypeName());
+    private DcValue generateDcValueForSource(SourceType sourceType, String value, String language) {
+        return getDcValue(value, SOURCE, language, sourceType.getTypeName());
     }
 
-    private DcValue generateDcValueForRights(RightsType rightsType, String value) {
-        return getDcValue(value, RIGHTS, EN_US, rightsType.getTypeName());
+    private DcValue generateDcValueForRights(RightsType rightsType, String value, String language) {
+        return getDcValue(value, RIGHTS, language, rightsType.getTypeName());
     }
 
-    private DcValue generateDcValueForRelation(RelationType relationType, String value) {
-        return getDcValue(value, RELATION, EN_US, relationType.getTypeName());
+    private DcValue generateDcValueForRelation(RelationType relationType, String value, String language) {
+        return getDcValue(value, RELATION, language, relationType.getTypeName());
     }
 
-    private DcValue generateDcValueForPublisher(PublisherType publisherType, String value) {
-        return getDcValue(value, PUBLISHER, EN_US, publisherType.getTypeName());
+    private DcValue generateDcValueForPublisher(PublisherType publisherType, String value, String language) {
+        return getDcValue(value, PUBLISHER, language, publisherType.getTypeName());
     }
 
-    private DcValue generateDcValueForLanguage(LanguageType languageType, String value) {
-        return getDcValue(value, LANGUAGE, EN_US, languageType.getTypeName());
+    private DcValue generateDcValueForLanguage(LanguageType languageType, String value, String language) {
+        return getDcValue(value, LANGUAGE, language, languageType.getTypeName());
     }
 
     private DcValue generateDcValueForFormat(FormatType formatType, String value) {
-        return getDcValue(value, FORMAT, EN_US, formatType.getTypeName());
+        return getDcValue(value, FORMAT, null, formatType.getTypeName());
     }
 
-    private DcValue generateDcValueForDescription(DescriptionType descriptionType, String value) {
-        return getDcValue(value, DESCRIPTION, EN_US, descriptionType.getTypeName());
+    private DcValue generateDcValueForDescription(DescriptionType descriptionType, String value, String language) {
+        return getDcValue(value, DESCRIPTION, language, descriptionType.getTypeName());
     }
 
-    private DcValue generateDcValueForIdentifier(IdentifierType uriType, String value) {
-        return getDcValue(value, IDENTIFIER, EN_US, uriType.getTypeName());
+    private DcValue generateDcValueForIdentifier(IdentifierType uriType, String value, String language) {
+        return getDcValue(value, IDENTIFIER, language, uriType.getTypeName());
     }
 
     private DcValue generateDcValueForCreator(CreatorType creatorType, String value) {
-        return getDcValue(value, CREATOR, EN_US, creatorType.getTypeName());
+        return getDcValue(value, CREATOR, null, creatorType.getTypeName());
     }
 
     private DcValue generateDcValueForDate(DateType dateType, String value) {
         return getDcValue(value, DATE, null, dateType.getTypeName());
     }
 
-    private DcValue generateDcValueForCoverage(CoverageType coverageType, String value) {
-        return getDcValue(value, COVERAGE, EN_US, coverageType.getTypeName());
+    private DcValue generateDcValueForCoverage(CoverageType coverageType, String value, String language) {
+        return getDcValue(value, COVERAGE, language, coverageType.getTypeName());
     }
 
     private DcValue generateDcValueForContributor(ContributorType contributorType, String contributorName) {
-        return getDcValue(contributorName, CONTRIBUTOR, EN_US, contributorType.getTypeName());
+        return getDcValue(contributorName, CONTRIBUTOR, null, contributorType.getTypeName());
     }
 
-    private DcValue generateDcValueForProvenance(ProvenanceType provenanceType, String value) {
-        return getDcValue(value, PROVENANCE, EN_US, provenanceType.getTypeName());
+    private DcValue generateDcValueForProvenance(ProvenanceType provenanceType, String value, String language) {
+        return getDcValue(value, PROVENANCE, language, provenanceType.getTypeName());
     }
 
     private DcValue getDcValue(String value, String subject, String enUs, String typeName) {

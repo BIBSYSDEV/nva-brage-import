@@ -48,6 +48,11 @@ public enum SubjectType implements ElementType {
         return this.typeName;
     }
 
+    @Override
+    public boolean isLanguageBased() {
+        return true;
+    }
+
     /**
      * Get the equivalent SubjectType by its string representation.
      *

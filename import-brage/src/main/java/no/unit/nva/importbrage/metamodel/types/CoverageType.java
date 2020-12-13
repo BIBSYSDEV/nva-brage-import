@@ -19,6 +19,11 @@ public enum CoverageType implements ElementType {
         return type;
     }
 
+    @Override
+    public boolean isLanguageBased() {
+        return true;
+    }
+
     /**
      * Get the equivalent CoverageType by its string representation.
      *

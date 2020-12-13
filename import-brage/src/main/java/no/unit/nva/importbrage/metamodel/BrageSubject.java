@@ -7,30 +7,25 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageSubject {
+public class BrageSubject extends BrageLanguageValue {
 
     private final SubjectType subjectType;
-    private final String value;
 
     public BrageSubject(DcValue value) throws InvalidQualifierException {
-        this(value.getQualifier(), value.getValue());
+        this(value.getQualifier(), value.getValue(), value.getLanguage());
     }
 
-    public BrageSubject(String qualifier, String value) throws InvalidQualifierException {
-        this(SubjectType.getTypeByName(qualifier), value);
+    public BrageSubject(String qualifier, String value, String language) throws InvalidQualifierException {
+        this(SubjectType.getTypeByName(qualifier), value, language);
     }
 
-    public BrageSubject(SubjectType subjectType, String value) {
+    public BrageSubject(SubjectType subjectType, String value, String language) {
+        super(value, language);
         this.subjectType = subjectType;
-        this.value = value;
     }
 
     public SubjectType getSubjectType() {
         return subjectType;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -42,14 +37,16 @@ public class BrageSubject {
         if (!(o instanceof BrageSubject)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BrageSubject that = (BrageSubject) o;
-        return getSubjectType() == that.getSubjectType()
-                && Objects.equals(getValue(), that.getValue());
+        return getSubjectType() == that.getSubjectType();
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getSubjectType(), getValue());
+        return Objects.hash(super.hashCode(), getSubjectType());
     }
 }

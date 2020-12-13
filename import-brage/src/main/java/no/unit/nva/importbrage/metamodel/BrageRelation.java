@@ -7,29 +7,24 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageRelation {
+public class BrageRelation extends BrageLanguageValue {
     private final RelationType relationType;
-    private final String value;
 
     public BrageRelation(DcValue value) throws InvalidQualifierException {
-        this(value.getQualifier(), value.getValue());
+        this(value.getQualifier(), value.getValue(), value.getLanguage());
     }
 
-    public BrageRelation(String qualifier, String value) throws InvalidQualifierException {
-        this(RelationType.getTypeByName(qualifier), value);
+    public BrageRelation(String qualifier, String value, String language) throws InvalidQualifierException {
+        this(RelationType.getTypeByName(qualifier), value, language);
     }
 
-    public BrageRelation(RelationType relationType, String value) {
+    public BrageRelation(RelationType relationType, String value, String language) {
+        super(value, language);
         this.relationType = relationType;
-        this.value = value;
     }
 
     public RelationType getRelationType() {
         return relationType;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -41,14 +36,16 @@ public class BrageRelation {
         if (!(o instanceof BrageRelation)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BrageRelation that = (BrageRelation) o;
-        return getRelationType() == that.getRelationType()
-                && Objects.equals(getValue(), that.getValue());
+        return getRelationType() == that.getRelationType();
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getRelationType(), getValue());
+        return Objects.hash(super.hashCode(), getRelationType());
     }
 }

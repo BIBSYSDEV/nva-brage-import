@@ -7,7 +7,7 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageDescription {
+public class BrageDescription extends BrageLanguageValue {
     /*
       <dcvalue element="description" qualifier="none" language="en_US">Dette&#x20;er&#x20;en&#x20;beskrivelse&#x20;av
           &#x20;publikasjonen,&#x20;ikke&#x20;et&#x20;sammendrag.&#x20;Brukes&#x20;i&#x20;de&#x20;tilfeller&#x20;
@@ -55,27 +55,22 @@ public class BrageDescription {
 
 
     private final DescriptionType descriptionType;
-    private final String value;
 
     public BrageDescription(DcValue value) throws InvalidQualifierException {
-        this(value.getQualifier(), value.getValue());
+        this(value.getQualifier(), value.getValue(), value.getLanguage());
     }
 
-    public BrageDescription(String qualifier, String value) throws InvalidQualifierException {
-        this(DescriptionType.getTypeByName(qualifier), value);
+    public BrageDescription(String qualifier, String value, String language) throws InvalidQualifierException {
+        this(DescriptionType.getTypeByName(qualifier), value, language);
     }
 
-    public BrageDescription(DescriptionType descriptionType, String value) {
+    public BrageDescription(DescriptionType descriptionType, String value, String language) {
+        super(value, language);
         this.descriptionType = descriptionType;
-        this.value = value;
     }
 
     public DescriptionType getDescriptionType() {
         return descriptionType;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -87,14 +82,16 @@ public class BrageDescription {
         if (!(o instanceof BrageDescription)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BrageDescription that = (BrageDescription) o;
-        return getDescriptionType() == that.getDescriptionType()
-                && Objects.equals(getValue(), that.getValue());
+        return getDescriptionType() == that.getDescriptionType();
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getDescriptionType(), getValue());
+        return Objects.hash(super.hashCode(), getDescriptionType());
     }
 }

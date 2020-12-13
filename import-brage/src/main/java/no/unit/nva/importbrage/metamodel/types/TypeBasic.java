@@ -20,6 +20,11 @@ public enum TypeBasic implements ElementType {
         return typeName;
     }
 
+    @Override
+    public boolean isLanguageBased() {
+        return true;
+    }
+
     /**
      * Get the equivalent TypeBasic by its string representation.
      *

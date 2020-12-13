@@ -7,29 +7,24 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BragePublisher {
+public class BragePublisher extends BrageLanguageValue {
     private final PublisherType publisherType;
-    private final String value;
 
     public BragePublisher(DcValue value) throws InvalidQualifierException {
-        this(value.getQualifier(), value.getValue());
+        this(value.getQualifier(), value.getValue(), value.getLanguage());
     }
 
-    public BragePublisher(String qualifier, String value) throws InvalidQualifierException {
-        this(PublisherType.getTypeByName(qualifier), value);
+    public BragePublisher(String qualifier, String value, String language) throws InvalidQualifierException {
+        this(PublisherType.getTypeByName(qualifier), value, language);
     }
 
-    public BragePublisher(PublisherType publisherType, String value) {
+    public BragePublisher(PublisherType publisherType, String value, String language) {
+        super(value, language);
         this.publisherType = publisherType;
-        this.value = value;
     }
 
     public PublisherType getPublisherType() {
         return publisherType;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -41,14 +36,16 @@ public class BragePublisher {
         if (!(o instanceof BragePublisher)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BragePublisher that = (BragePublisher) o;
-        return getPublisherType() == that.getPublisherType()
-                && Objects.equals(getValue(), that.getValue());
+        return getPublisherType() == that.getPublisherType();
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getPublisherType(), getValue());
+        return Objects.hash(super.hashCode(), getPublisherType());
     }
 }

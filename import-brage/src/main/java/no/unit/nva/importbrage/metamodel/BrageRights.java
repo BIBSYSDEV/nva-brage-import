@@ -7,29 +7,24 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageRights {
+public class BrageRights extends BrageLanguageValue {
     private final RightsType rightsType;
-    private final String value;
 
     public BrageRights(DcValue value) throws InvalidQualifierException {
-        this(value.getQualifier(), value.getValue());
+        this(value.getQualifier(), value.getValue(), value.getLanguage());
     }
 
-    public BrageRights(String rightsType, String value) throws InvalidQualifierException {
-        this(RightsType.getTypeByName(rightsType), value);
+    public BrageRights(String rightsType, String value, String language) throws InvalidQualifierException {
+        this(RightsType.getTypeByName(rightsType), value, language);
     }
 
-    public BrageRights(RightsType rightsType, String value) {
+    public BrageRights(RightsType rightsType, String value, String language) {
+        super(value, language);
         this.rightsType = rightsType;
-        this.value = value;
     }
 
     public RightsType getRightsType() {
         return rightsType;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -41,6 +36,9 @@ public class BrageRights {
         if (!(o instanceof BrageRights)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BrageRights that = (BrageRights) o;
         return getRightsType() == that.getRightsType()
                 && Objects.equals(getValue(), that.getValue());
@@ -49,6 +47,6 @@ public class BrageRights {
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getRightsType(), getValue());
+        return Objects.hash(super.hashCode(), getRightsType(), getValue());
     }
 }

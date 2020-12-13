@@ -7,7 +7,7 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageDate {
+public class BrageDate extends BrageValue {
     /*
         Generated from XML like:
 
@@ -32,7 +32,6 @@ public class BrageDate {
      */
 
     private final DateType dateType;
-    private final String value;
 
     public BrageDate(DcValue value) throws InvalidQualifierException {
         this(value.getQualifier(), value.getValue());
@@ -43,17 +42,12 @@ public class BrageDate {
     }
 
     public BrageDate(DateType dateType, String value) {
+        super(value);
         this.dateType = dateType;
-        this.value = value;
     }
 
     public DateType getDateType() {
         return dateType;
-    }
-
-    @JacocoGenerated
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -65,14 +59,16 @@ public class BrageDate {
         if (!(o instanceof BrageDate)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BrageDate brageDate = (BrageDate) o;
-        return getDateType() == brageDate.getDateType()
-                && Objects.equals(value, brageDate.value);
+        return getDateType() == brageDate.getDateType();
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getDateType(), value);
+        return Objects.hash(super.hashCode(), getDateType());
     }
 }

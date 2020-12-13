@@ -25,6 +25,11 @@ public enum DescriptionType implements ElementType {
         return typeName;
     }
 
+    @Override
+    public boolean isLanguageBased() {
+        return true;
+    }
+
     /**
      * Get the equivalent DescriptionType by its string representation.
      *

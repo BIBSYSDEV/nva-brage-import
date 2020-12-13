@@ -7,29 +7,24 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageTitle {
+public class BrageTitle extends BrageLanguageValue {
     private final TitleType titleType;
-    private final String value;
 
     public BrageTitle(DcValue value) throws InvalidQualifierException {
-        this(value.getQualifier(), value.getValue());
+        this(value.getQualifier(), value.getValue(), value.getLanguage());
     }
 
-    public BrageTitle(String qualifier, String value) throws InvalidQualifierException {
-        this(TitleType.getTypeByName(qualifier), value);
+    public BrageTitle(String qualifier, String value, String language) throws InvalidQualifierException {
+        this(TitleType.getTypeByName(qualifier), value, language);
     }
 
-    public BrageTitle(TitleType titleType, String value) {
+    public BrageTitle(TitleType titleType, String value, String language) {
+        super(value, language);
         this.titleType = titleType;
-        this.value = value;
     }
 
     public TitleType getTitleType() {
         return titleType;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -41,14 +36,16 @@ public class BrageTitle {
         if (!(o instanceof BrageTitle)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BrageTitle that = (BrageTitle) o;
-        return getTitleType() == that.getTitleType()
-                && Objects.equals(getValue(), that.getValue());
+        return getTitleType() == that.getTitleType();
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getTitleType(), getValue());
+        return Objects.hash(super.hashCode(), getTitleType());
     }
 }

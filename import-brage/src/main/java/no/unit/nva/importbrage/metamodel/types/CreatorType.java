@@ -17,6 +17,11 @@ public enum CreatorType implements ElementType {
         return typeName;
     }
 
+    @Override
+    public boolean isLanguageBased() {
+        return false;
+    }
+
     /**
      * Get the equivalent CreatorType by its string representation.
      *

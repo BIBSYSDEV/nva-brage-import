@@ -7,9 +7,8 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageFormat {
+public class BrageFormat extends BrageValue {
     private final FormatType formatType;
-    private final String value;
 
     public BrageFormat(DcValue value) throws InvalidQualifierException {
         this(value.getQualifier(), value.getValue());
@@ -20,16 +19,12 @@ public class BrageFormat {
     }
 
     public BrageFormat(FormatType formatType, String value) {
+        super(value);
         this.formatType = formatType;
-        this.value = value;
     }
 
     public FormatType getFormatType() {
         return formatType;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -41,14 +36,16 @@ public class BrageFormat {
         if (!(o instanceof BrageFormat)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BrageFormat that = (BrageFormat) o;
-        return getFormatType() == that.getFormatType()
-                && Objects.equals(getValue(), that.getValue());
+        return getFormatType() == that.getFormatType();
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getFormatType(), getValue());
+        return Objects.hash(super.hashCode(), getFormatType());
     }
 }

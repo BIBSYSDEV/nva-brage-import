@@ -7,7 +7,7 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageIdentifier {
+public class BrageIdentifier extends BrageLanguageValue {
     /*
 
         Generated from an XML element like:
@@ -37,27 +37,22 @@ public class BrageIdentifier {
      */
 
     private final IdentifierType identifierType;
-    private final String value;
 
     public BrageIdentifier(DcValue value) throws InvalidQualifierException {
-        this(value.getQualifier(), value.getValue());
+        this(value.getQualifier(), value.getValue(), value.getLanguage());
     }
 
-    public BrageIdentifier(String identifierType, String value) throws InvalidQualifierException {
-        this(IdentifierType.getTypeByName(identifierType), value);
+    public BrageIdentifier(String identifierType, String value, String language) throws InvalidQualifierException {
+        this(IdentifierType.getTypeByName(identifierType), value, language);
     }
 
-    public BrageIdentifier(IdentifierType identifierType, String value) {
+    public BrageIdentifier(IdentifierType identifierType, String value, String language) {
+        super(value, language);
         this.identifierType = identifierType;
-        this.value = value;
     }
 
     public IdentifierType getIdentifierType() {
         return identifierType;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -69,14 +64,16 @@ public class BrageIdentifier {
         if (!(o instanceof BrageIdentifier)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BrageIdentifier that = (BrageIdentifier) o;
-        return getIdentifierType() == that.getIdentifierType()
-                && Objects.equals(getValue(), that.getValue());
+        return getIdentifierType() == that.getIdentifierType();
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getIdentifierType(), getValue());
+        return Objects.hash(super.hashCode(), getIdentifierType());
     }
 }

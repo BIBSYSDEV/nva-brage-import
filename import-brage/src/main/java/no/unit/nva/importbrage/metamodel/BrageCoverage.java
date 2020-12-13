@@ -7,7 +7,7 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
-public class BrageCoverage {
+public class BrageCoverage extends BrageLanguageValue {
     /*
       Generated from XML like:
 
@@ -20,27 +20,22 @@ public class BrageCoverage {
     */
 
     private final CoverageType type;
-    private final String value;
 
-    public BrageCoverage(String type, String value) throws InvalidQualifierException {
-        this(CoverageType.getTypeByName(type), value);
+    public BrageCoverage(String type, String value, String language) throws InvalidQualifierException {
+        this(CoverageType.getTypeByName(type), value, language);
     }
 
-    public BrageCoverage(CoverageType type, String value) {
+    public BrageCoverage(CoverageType type, String value, String language) {
+        super(value, language);
         this.type = type;
-        this.value = value;
     }
 
     public BrageCoverage(DcValue value) throws InvalidQualifierException {
-        this(value.getQualifier(), value.getValue());
+        this(value.getQualifier(), value.getValue(), value.getLanguage());
     }
 
     public CoverageType getType() {
         return type;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @JacocoGenerated
@@ -52,14 +47,16 @@ public class BrageCoverage {
         if (!(o instanceof BrageCoverage)) {
             return false;
         }
+        if (!super.equals(o)) {
+            return false;
+        }
         BrageCoverage that = (BrageCoverage) o;
-        return getType() == that.getType()
-                && Objects.equals(getValue(), that.getValue());
+        return getType() == that.getType();
     }
 
     @JacocoGenerated
     @Override
     public int hashCode() {
-        return Objects.hash(getType(), getValue());
+        return Objects.hash(super.hashCode(), getType());
     }
 }

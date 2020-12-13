@@ -3,21 +3,28 @@ package no.unit.nva.importbrage.metamodel.types;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 
 public enum RightsType implements ElementType {
-    HOLDER("holder"),
-    LICENSE("license"), 
-    URI("uri"),
-    UNQUALIFIED(null);
+    HOLDER("holder", true),
+    LICENSE("license", true),
+    URI("uri", false),
+    UNQUALIFIED(null, true);
 
     public static final String RIGHTS = "rights";
     private final String typeName;
+    private final boolean languageBased;
 
-    RightsType(String typeName) {
+    RightsType(String typeName, boolean languageBased) {
         this.typeName = typeName;
+        this.languageBased = languageBased;
     }
 
     @Override
     public String getTypeName() {
         return typeName;
+    }
+
+    @Override
+    public boolean isLanguageBased() {
+        return this.languageBased;
     }
 
     /**

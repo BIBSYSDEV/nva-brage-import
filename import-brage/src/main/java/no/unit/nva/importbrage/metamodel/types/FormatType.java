@@ -28,6 +28,11 @@ public enum FormatType implements ElementType {
         return typeName;
     }
 
+    @Override
+    public boolean isLanguageBased() {
+        return false;
+    }
+
     /**
      * Get the equivalent FormatType by its string representation.
      *

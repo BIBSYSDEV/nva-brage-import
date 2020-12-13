@@ -3,23 +3,30 @@ package no.unit.nva.importbrage.metamodel.types;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 
 public enum RelationType implements ElementType {
-    HAS_PART("haspart"),
-    IS_PART_OF("ispartof"),
-    IS_PART_OF_SERIES("ispartofseries"),
-    PROJECT("project"),
-    URI("uri"),
-    UNQUALIFIED(null);
+    HAS_PART("haspart", true),
+    IS_PART_OF("ispartof", true),
+    IS_PART_OF_SERIES("ispartofseries", false),
+    PROJECT("project", true),
+    URI("uri", false),
+    UNQUALIFIED(null, false);
 
     public static final String RELATION = "relation";
     private final String typeName;
+    private final boolean languageBased;
 
-    RelationType(String typeName) {
+    RelationType(String typeName, boolean languageBased) {
         this.typeName = typeName;
+        this.languageBased = languageBased;
     }
 
     @Override
     public String getTypeName() {
         return typeName;
+    }
+
+    @Override
+    public boolean isLanguageBased() {
+        return this.languageBased;
     }
 
     /**
