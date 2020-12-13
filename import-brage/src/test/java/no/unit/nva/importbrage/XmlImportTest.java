@@ -14,6 +14,7 @@ import no.unit.nva.importbrage.metamodel.BrageLanguage;
 import no.unit.nva.importbrage.metamodel.BrageProvenance;
 import no.unit.nva.importbrage.metamodel.BragePublication;
 import no.unit.nva.importbrage.metamodel.BragePublisher;
+import no.unit.nva.importbrage.metamodel.BrageRelation;
 import no.unit.nva.importbrage.metamodel.types.ContributorType;
 import no.unit.nva.importbrage.metamodel.types.CoverageType;
 import no.unit.nva.importbrage.metamodel.types.CreatorType;
@@ -25,6 +26,7 @@ import no.unit.nva.importbrage.metamodel.types.IdentifierType;
 import no.unit.nva.importbrage.metamodel.types.LanguageType;
 import no.unit.nva.importbrage.metamodel.types.ProvenanceType;
 import no.unit.nva.importbrage.metamodel.types.PublisherType;
+import no.unit.nva.importbrage.metamodel.types.RelationType;
 import nva.commons.utils.log.LogUtils;
 import nva.commons.utils.log.TestAppender;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +43,7 @@ import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -55,6 +58,7 @@ import static no.unit.nva.importbrage.metamodel.types.IdentifierType.IDENTIFIER;
 import static no.unit.nva.importbrage.metamodel.types.LanguageType.LANGUAGE;
 import static no.unit.nva.importbrage.metamodel.types.ProvenanceType.PROVENANCE;
 import static no.unit.nva.importbrage.metamodel.types.PublisherType.PUBLISHER;
+import static no.unit.nva.importbrage.metamodel.types.RelationType.RELATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
@@ -89,17 +93,18 @@ class XmlImportTest {
 
     @Test
     void xmlImportLoadsData() throws IOException {
-        Map<ElementType, String> testData = Map.of(
-                ContributorType.AUTHOR, RANDY_OLSON,
-                CoverageType.SPATIAL, NORWAY,
-                CreatorType.UNQUALIFIED, RANDY_OLSON,
-                DateType.ACCESSIONED, ANY_DATE,
-                IdentifierType.URI, EXAMPLE_URI,
-                DescriptionType.ABSTRACT, "A long descriptive text that stands as a description",
-                FormatType.EXTENT, "232",
-                LanguageType.ISO, "en",
-                ProvenanceType.UNQUALIFIED, "Stolen goods",
-                PublisherType.UNQUALIFIED, "Ratty McFeeson publishing LLC");
+        var testData = new HashMap<ElementType, String>();
+        testData.put(ContributorType.AUTHOR, RANDY_OLSON);
+        testData.put(CoverageType.SPATIAL, NORWAY);
+        testData.put(CreatorType.UNQUALIFIED, RANDY_OLSON);
+        testData.put(DateType.ACCESSIONED, ANY_DATE);
+        testData.put(IdentifierType.URI, EXAMPLE_URI);
+        testData.put(DescriptionType.ABSTRACT, "A long descriptive text that stands as a description");
+        testData.put(FormatType.EXTENT, "232");
+        testData.put(LanguageType.ISO, "en");
+        testData.put(ProvenanceType.UNQUALIFIED, "Stolen goods");
+        testData.put(PublisherType.UNQUALIFIED, "Ratty McFeeson publishing LLC");
+        testData.put(RelationType.HAS_PART, "Some other bit");
         var testPair = generateTestPair(testData);
         BragePublication publication = getBragePublication(testPair.getKey());
         assertThat(publication, equalTo(testPair.getValue()));
@@ -153,6 +158,7 @@ class XmlImportTest {
         elementTypes.addAll(Arrays.asList(LanguageType.values()));
         elementTypes.addAll(Arrays.asList(ProvenanceType.values()));
         elementTypes.addAll(Arrays.asList(PublisherType.values()));
+        elementTypes.addAll(Arrays.asList(RelationType.values()));
 
         for (ElementType elementType : elementTypes) {
             argumentsBuilder.add(Arguments.of(elementType.getClass().getSimpleName(), elementType));
@@ -175,7 +181,7 @@ class XmlImportTest {
 
     @ParameterizedTest(name = "XmlImport creates report when qualifier is unknown for {0}")
     @ValueSource(strings = {CONTRIBUTOR, COVERAGE, CREATOR, DATE, DESCRIPTION, FORMAT, IDENTIFIER, LANGUAGE,
-            PROVENANCE, PUBLISHER})
+            PROVENANCE, PUBLISHER, RELATION})
     void xmlImportReportsBragePublicationWhenQualifierIsUnknown(String type) throws IOException {
         var dublinCore = generateDublinCoreWithQualifierForElement(type, NONSENSE);
         File file = generateXmlFile(dublinCore);
@@ -229,6 +235,8 @@ class XmlImportTest {
                 return ProvenanceType.getAllowedValues();
             case PUBLISHER:
                 return PublisherType.getAllowedValues();
+            case RELATION:
+                return RelationType.getAllowedValues();
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }
@@ -334,6 +342,12 @@ class XmlImportTest {
                 publication.addPublisher(new BragePublisher(publisherType, value));
                 return;
             }
+            if (type instanceof RelationType) {
+                var relationType = (RelationType) type;
+                dcValues.add(generateDcValueForRelation(relationType, value));
+                publication.addRelation(new BrageRelation(relationType, value));
+                return;
+            }
             throw new RuntimeException("Cannot generate test data for unknown type");
         });
 
@@ -341,6 +355,15 @@ class XmlImportTest {
         dublinCore.setDcValues(dcValues);
 
         return new AbstractMap.SimpleEntry<>(dublinCore, publication);
+    }
+
+    private DcValue generateDcValueForRelation(RelationType relationType, String value) {
+        return new DcValueBuilder()
+                .withElement(RELATION)
+                .withLanguage(EN_US)
+                .withQualifier(relationType.getTypeName())
+                .withValue(value)
+                .build();
     }
 
     private DcValue generateDcValueForPublisher(PublisherType publisherType, String value) {

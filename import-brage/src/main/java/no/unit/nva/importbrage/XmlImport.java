@@ -13,6 +13,7 @@ import no.unit.nva.importbrage.metamodel.BrageLanguage;
 import no.unit.nva.importbrage.metamodel.BrageProvenance;
 import no.unit.nva.importbrage.metamodel.BragePublication;
 import no.unit.nva.importbrage.metamodel.BragePublisher;
+import no.unit.nva.importbrage.metamodel.BrageRelation;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,6 +33,7 @@ import static no.unit.nva.importbrage.metamodel.types.IdentifierType.IDENTIFIER;
 import static no.unit.nva.importbrage.metamodel.types.LanguageType.LANGUAGE;
 import static no.unit.nva.importbrage.metamodel.types.ProvenanceType.PROVENANCE;
 import static no.unit.nva.importbrage.metamodel.types.PublisherType.PUBLISHER;
+import static no.unit.nva.importbrage.metamodel.types.RelationType.RELATION;
 
 public final class XmlImport {
 
@@ -73,78 +75,129 @@ public final class XmlImport {
         var element = value.getElement();
         switch (element) {
             case CONTRIBUTOR:
-                try {
-                    publication.addContributor(new BrageContributor(value));
-                } catch (InvalidQualifierException e) {
-                    errors.add(e.getMessage());
-                }
+                updateContributor(value, publication);
                 break;
             case COVERAGE:
-                try {
-                    publication.addCoverage(new BrageCoverage(value));
-                } catch (InvalidQualifierException e) {
-                    errors.add(e.getMessage());
-                }
+                updateCoverage(value, publication);
                 break;
             case CREATOR:
-                try {
-                    publication.addCreator(new BrageCreator(value));
-                } catch (InvalidQualifierException e) {
-                    errors.add(e.getMessage());
-                }
+                updateCreator(value, publication);
                 break;
             case DATE:
-                try {
-                    publication.addDate(new BrageDate(value));
-                } catch (InvalidQualifierException e) {
-                    errors.add(e.getMessage());
-                }
+                updateDate(value, publication);
                 break;
             case DESCRIPTION:
-                try {
-                    publication.addDescription(new BrageDescription(value));
-                } catch (InvalidQualifierException e) {
-                    errors.add(e.getMessage());
-                }
+                updateDescription(value, publication);
                 break;
             case FORMAT:
-                try {
-                    publication.addFormat(new BrageFormat(value));
-                } catch (InvalidQualifierException e) {
-                    errors.add(e.getMessage());
-                }
+                updateFormat(value, publication);
                 break;
             case IDENTIFIER:
-                try {
-                    publication.addIdentifier(new BrageIdentifier(value));
-                } catch (InvalidQualifierException e) {
-                    errors.add(e.getMessage());
-                }
+                updateIdentifier(value, publication);
                 break;
             case LANGUAGE:
-                try {
-                    publication.addLanguage(new BrageLanguage(value));
-                } catch (InvalidQualifierException e) {
-                    errors.add(e.getMessage());
-                }
+                updateLanguage(value, publication);
                 break;
             case PROVENANCE:
-                try {
-                    publication.addProvenance(new BrageProvenance(value));
-                } catch (InvalidQualifierException e) {
-                    errors.add(e.getMessage());
-                }
+                updaateProvenance(value, publication);
                 break;
             case PUBLISHER:
-                try {
-                    publication.addPublisher(new BragePublisher(value));
-                } catch (InvalidQualifierException e) {
-                    errors.add(e.getMessage());
-                }
+                updatePublisher(value, publication);
+                break;
+            case RELATION:
+                updateRelation(value, publication);
                 break;
             default:
                 logUnknownType(element, originPath);
                 break;
+        }
+    }
+
+    private static void updateRelation(DcValue value, BragePublication publication) {
+        try {
+            publication.addRelation(new BrageRelation(value));
+        } catch (InvalidQualifierException e) {
+            errors.add(e.getMessage());
+        }
+    }
+
+    private static void updatePublisher(DcValue value, BragePublication publication) {
+        try {
+            publication.addPublisher(new BragePublisher(value));
+        } catch (InvalidQualifierException e) {
+            errors.add(e.getMessage());
+        }
+    }
+
+    private static void updaateProvenance(DcValue value, BragePublication publication) {
+        try {
+            publication.addProvenance(new BrageProvenance(value));
+        } catch (InvalidQualifierException e) {
+            errors.add(e.getMessage());
+        }
+    }
+
+    private static void updateLanguage(DcValue value, BragePublication publication) {
+        try {
+            publication.addLanguage(new BrageLanguage(value));
+        } catch (InvalidQualifierException e) {
+            errors.add(e.getMessage());
+        }
+    }
+
+    private static void updateIdentifier(DcValue value, BragePublication publication) {
+        try {
+            publication.addIdentifier(new BrageIdentifier(value));
+        } catch (InvalidQualifierException e) {
+            errors.add(e.getMessage());
+        }
+    }
+
+    private static void updateFormat(DcValue value, BragePublication publication) {
+        try {
+            publication.addFormat(new BrageFormat(value));
+        } catch (InvalidQualifierException e) {
+            errors.add(e.getMessage());
+        }
+    }
+
+    private static void updateDescription(DcValue value, BragePublication publication) {
+        try {
+            publication.addDescription(new BrageDescription(value));
+        } catch (InvalidQualifierException e) {
+            errors.add(e.getMessage());
+        }
+    }
+
+    private static void updateDate(DcValue value, BragePublication publication) {
+        try {
+            publication.addDate(new BrageDate(value));
+        } catch (InvalidQualifierException e) {
+            errors.add(e.getMessage());
+        }
+    }
+
+    private static void updateCreator(DcValue value, BragePublication publication) {
+        try {
+            publication.addCreator(new BrageCreator(value));
+        } catch (InvalidQualifierException e) {
+            errors.add(e.getMessage());
+        }
+    }
+
+    private static void updateCoverage(DcValue value, BragePublication publication) {
+        try {
+            publication.addCoverage(new BrageCoverage(value));
+        } catch (InvalidQualifierException e) {
+            errors.add(e.getMessage());
+        }
+    }
+
+    private static void updateContributor(DcValue value, BragePublication publication) {
+        try {
+            publication.addContributor(new BrageContributor(value));
+        } catch (InvalidQualifierException e) {
+            errors.add(e.getMessage());
         }
     }
 
