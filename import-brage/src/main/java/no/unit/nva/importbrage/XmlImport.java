@@ -14,6 +14,7 @@ import no.unit.nva.importbrage.metamodel.BrageProvenance;
 import no.unit.nva.importbrage.metamodel.BragePublication;
 import no.unit.nva.importbrage.metamodel.BragePublisher;
 import no.unit.nva.importbrage.metamodel.BrageRelation;
+import no.unit.nva.importbrage.metamodel.BrageRights;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +35,7 @@ import static no.unit.nva.importbrage.metamodel.types.LanguageType.LANGUAGE;
 import static no.unit.nva.importbrage.metamodel.types.ProvenanceType.PROVENANCE;
 import static no.unit.nva.importbrage.metamodel.types.PublisherType.PUBLISHER;
 import static no.unit.nva.importbrage.metamodel.types.RelationType.RELATION;
+import static no.unit.nva.importbrage.metamodel.types.RightsType.RIGHTS;
 
 public final class XmlImport {
 
@@ -107,9 +109,20 @@ public final class XmlImport {
             case RELATION:
                 updateRelation(value, publication);
                 break;
+            case RIGHTS:
+                updateRights(value, publication);
+                break;
             default:
                 logUnknownType(element, originPath);
                 break;
+        }
+    }
+
+    private static void updateRights(DcValue value, BragePublication publication) {
+        try {
+            publication.addRights(new BrageRights(value));
+        } catch (InvalidQualifierException e) {
+            errors.add(e.getMessage());
         }
     }
 
