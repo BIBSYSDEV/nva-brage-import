@@ -84,16 +84,22 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class XmlImportTest {
 
     public static final String TEMP_FILE = "complete_record.xml";
-    public static final String EXAMPLE_URI = "https://example.org/article/1";
+    public static final String EXAMPLE_URI = "https://hdl.handle.net/11250/2712283";
     public static final String RANDY_OLSON = "Randy Olson";
     public static final String NORWAY = "Norway";
     public static final String DATE = "date";
-    public static final String ANY_DATE = "2020-02-01";
+    public static final String ANY_TIMESTAMP = "2020-12-07T16:46:42Z";
     private static final String EN_US = "en_US";
     public static final String DC = "dc";
     public static final String DELIMITER = ", ";
     public static final String NONSENSE = "nonsense";
     public static final String DESCRIPTION_EXAMPLE = "A long descriptive text that stands as a description";
+    public static final String NOT_SURE_OF_VALUE = "NOT_SURE_WHAT_THIS_LOOKS_LIKE";
+    public static final String CC_LICENSE_URI = "http://creativecommons.org/licenses/by-sa/4.0/deed.no";
+    public static final String CITATION_VALUE = "Pikehat, S. (2019). Stephen's book of simple pleasures. "
+            + "London:Stephen's publishing.";
+    public static final String EXAMPLE_TITLE_EN = "Marco's lovely hat soaked in sangria";
+    public static final String EXAMPLE_TITLE_NB = "Marcos herlig hatt dynket i sangria";
     public static TestAppender logger;
     public static final ObjectMapper mapper = new XmlMapper();
 
@@ -108,27 +114,161 @@ class XmlImportTest {
     @Test
     void xmlImportLoadsData() throws IOException {
 
-        var testData = new ArrayList<BrageTestValue>();
-        testData.add(new BrageTestValue(ContributorType.AUTHOR, RANDY_OLSON, null));
-        testData.add(new BrageTestValue(CoverageType.SPATIAL, NORWAY, EN_US));
-        testData.add(new BrageTestValue(CreatorType.UNQUALIFIED, RANDY_OLSON, null));
-        testData.add(new BrageTestValue(DateType.ACCESSIONED, ANY_DATE, null));
-        testData.add(new BrageTestValue(IdentifierType.URI, EXAMPLE_URI, null));
-        testData.add(new BrageTestValue(DescriptionType.ABSTRACT, DESCRIPTION_EXAMPLE, EN_US));
-        testData.add(new BrageTestValue(FormatType.EXTENT, "232", null));
-        testData.add(new BrageTestValue(LanguageType.ISO, "en", null));
-        testData.add(new BrageTestValue(ProvenanceType.UNQUALIFIED, "Stolen goods", null));
-        testData.add(new BrageTestValue(PublisherType.UNQUALIFIED, "Ratty McFeeson publishing LLC", null));
-        testData.add(new BrageTestValue(RelationType.HAS_PART, "Some other bit", null));
-        testData.add(new BrageTestValue(RightsType.HOLDER, "Mr Holder's older brother", null));
-        testData.add(new BrageTestValue(SourceType.ARTICLE_NUMBER, "1234", null));
-        testData.add(new BrageTestValue(SubjectType.AGROVOC, "Blenny", null));
-        testData.add(new BrageTestValue(TitleType.UNQUALIFIED, "Marco's lovely hat soaked in sangria", null));
-        testData.add(new BrageTestValue(TypeBasic.UNQUALIFIED, "Hat studies", null));
-
-        var testPair = generateTestPair(testData);
+        AbstractMap.SimpleEntry<DublinCore, BragePublication> testPair = generateCompleteTestData();
         BragePublication publication = getBragePublication(testPair.getKey());
         assertThat(publication, equalTo(testPair.getValue()));
+    }
+
+    private AbstractMap.SimpleEntry<DublinCore, BragePublication> generateCompleteTestData() {
+        var testData = new ArrayList<BrageTestValue>();
+        addContributorValues(testData);
+        addCoverageValues(testData);
+        addCreatorValues(testData);
+        addDateValues(testData);
+        addIdentifierValues(testData);
+        addDescriptionValues(testData);
+        addFormatValues(testData);
+        addLanguageValues(testData);
+        addProvenanceValues(testData);
+        addPublisherValues(testData);
+        addRelationValues(testData);
+        addRightsValues(testData);
+        addSourceValues(testData);
+        addSubjectValues(testData);
+        addTitleValues(testData);
+        addTypeValues(testData);
+
+        return generateTestPair(testData);
+    }
+
+    private void addTypeValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(TypeBasic.UNQUALIFIED, NOT_SURE_OF_VALUE, null));
+    }
+
+    private void addTitleValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(TitleType.UNQUALIFIED, EXAMPLE_TITLE_EN, EN_US));
+        testData.add(new BrageTestValue(TitleType.ALTERNATIVE, EXAMPLE_TITLE_NB, "nb_NO"));
+    }
+
+    private void addSubjectValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(SubjectType.AGROVOC, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(SubjectType.CLASSIFICATION, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(SubjectType.DDC, "415", null));
+        testData.add(new BrageTestValue(SubjectType.HRCS, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(SubjectType.HUMORD, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(SubjectType.JEL, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(SubjectType.KEYWORD, "Anything really", null));
+        testData.add(new BrageTestValue(SubjectType.LCC, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(SubjectType.MESH, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(SubjectType.NSI, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(SubjectType.NUS, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(SubjectType.OTHER, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(SubjectType.REALFAGSTERMER, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(SubjectType.UNQUALIFIED, NOT_SURE_OF_VALUE, null));
+    }
+
+    private void addSourceValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(SourceType.ARTICLE_NUMBER, "1234", EN_US));
+        testData.add(new BrageTestValue(SourceType.ISSUE, "21", EN_US));
+        testData.add(new BrageTestValue(SourceType.JOURNAL, "Journal of Banjo Studies", EN_US));
+        testData.add(new BrageTestValue(SourceType.PAGE_NUMBER, "22", EN_US));
+        testData.add(new BrageTestValue(SourceType.URI, EXAMPLE_URI, EN_US));
+        testData.add(new BrageTestValue(SourceType.VOLUME, "23", EN_US));
+        testData.add(new BrageTestValue(SourceType.UNQUALIFIED, NOT_SURE_OF_VALUE, EN_US));
+    }
+
+    private void addRightsValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(RightsType.HOLDER, "Mr Holder's older brother", "*"));
+        testData.add(new BrageTestValue(RightsType.LICENSE, NOT_SURE_OF_VALUE, "*"));
+        testData.add(new BrageTestValue(RightsType.URI, CC_LICENSE_URI, "*"));
+        testData.add(new BrageTestValue(RightsType.UNQUALIFIED, NOT_SURE_OF_VALUE, "*"));
+    }
+
+    private void addRelationValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(RelationType.HAS_PART, "Some other bit", EN_US));
+        testData.add(new BrageTestValue(RelationType.IS_PART_OF, "Yet another bit", EN_US));
+        testData.add(new BrageTestValue(RelationType.IS_PART_OF_SERIES, "Stephen's books", null));
+        testData.add(new BrageTestValue(RelationType.PROJECT, "314228", null));
+        testData.add(new BrageTestValue(RelationType.URI, EXAMPLE_URI, null));
+        testData.add(new BrageTestValue(RelationType.UNQUALIFIED, NOT_SURE_OF_VALUE, null));
+    }
+
+    private void addPublisherValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(PublisherType.UNQUALIFIED, "Ratty McFeeson publishing LLC", EN_US));
+    }
+
+    private void addProvenanceValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(ProvenanceType.UNQUALIFIED, "Stolen goods", "en"));
+    }
+
+    private void addLanguageValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(LanguageType.ISO, "nob", EN_US));
+        testData.add(new BrageTestValue(LanguageType.UNQUALIFIED, "Bokmål", "en"));
+        testData.add(new BrageTestValue(LanguageType.UNQUALIFIED, "Bokmål", "nb"));
+    }
+
+    private void addFormatValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(FormatType.EXTENT, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(FormatType.MEDIUM, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(FormatType.MIMETYPE, "application/pdf", null));
+        testData.add(new BrageTestValue(FormatType.UNQUALIFIED, NOT_SURE_OF_VALUE, null));
+    }
+
+    private void addDescriptionValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(DescriptionType.ABSTRACT, DESCRIPTION_EXAMPLE, EN_US));
+        testData.add(new BrageTestValue(DescriptionType.DEGREE, NOT_SURE_OF_VALUE, EN_US));
+        testData.add(new BrageTestValue(DescriptionType.EMBARGO, NOT_SURE_OF_VALUE, EN_US));
+        testData.add(new BrageTestValue(DescriptionType.LOCALCODE, NOT_SURE_OF_VALUE, EN_US));
+        testData.add(new BrageTestValue(DescriptionType.PROVENANCE, NOT_SURE_OF_VALUE, EN_US));
+        testData.add(new BrageTestValue(DescriptionType.SPONSORSHIP, NOT_SURE_OF_VALUE, EN_US));
+        testData.add(new BrageTestValue(DescriptionType.TABLEOFCONTENTS, NOT_SURE_OF_VALUE, EN_US));
+        testData.add(new BrageTestValue(DescriptionType.VERSION, NOT_SURE_OF_VALUE, EN_US));
+        testData.add(new BrageTestValue(DescriptionType.UNQUALIFIED, NOT_SURE_OF_VALUE, EN_US));
+    }
+
+    private void addIdentifierValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(IdentifierType.URI, EXAMPLE_URI, null));
+        testData.add(new BrageTestValue(IdentifierType.CITATION, CITATION_VALUE, null));
+        testData.add(new BrageTestValue(IdentifierType.CRISTIN, "123123", null));
+        testData.add(new BrageTestValue(IdentifierType.DOI, "10.000/123123", null));
+        testData.add(new BrageTestValue(IdentifierType.ISBN, "978-3-16-148410-0", null));
+        testData.add(new BrageTestValue(IdentifierType.ISMN, "979-0-2600-0043-8,", null));
+        testData.add(new BrageTestValue(IdentifierType.ISSN, "2049-3630", null));
+        testData.add(new BrageTestValue(IdentifierType.PMID, "18183754", null));
+        testData.add(new BrageTestValue(IdentifierType.SLUG, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(IdentifierType.OTHER, NOT_SURE_OF_VALUE, null));
+        testData.add(new BrageTestValue(IdentifierType.UNQUALIFIED, NOT_SURE_OF_VALUE, null));
+    }
+
+    private void addDateValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(DateType.ACCESSIONED, ANY_TIMESTAMP, null));
+        testData.add(new BrageTestValue(DateType.AVAILABLE, ANY_TIMESTAMP, null));
+        testData.add(new BrageTestValue(DateType.COPYRIGHT, ANY_TIMESTAMP, null));
+        testData.add(new BrageTestValue(DateType.EMBARGO_END_DATE, "3000-01-01", null));
+        testData.add(new BrageTestValue(DateType.ISSUED, "2020-01-01", null));
+        testData.add(new BrageTestValue(DateType.SUBMITTED, "2019-06-01", null));
+        testData.add(new BrageTestValue(DateType.SWORD_UPDATED, ANY_TIMESTAMP, null));
+        testData.add(new BrageTestValue(DateType.UNQUALIFIED, "2030-01-01", null));
+    }
+
+    private void addCreatorValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(CreatorType.UNQUALIFIED, RANDY_OLSON, null));
+    }
+
+    private void addCoverageValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(CoverageType.SPATIAL, NORWAY, EN_US));
+        testData.add(new BrageTestValue(CoverageType.TEMPORAL, "20th Century", EN_US));
+    }
+
+    private void addContributorValues(ArrayList<BrageTestValue> testData) {
+        testData.add(new BrageTestValue(ContributorType.ADVISOR, RANDY_OLSON, null));
+        testData.add(new BrageTestValue(ContributorType.AUTHOR, RANDY_OLSON, null));
+        testData.add(new BrageTestValue(ContributorType.DEPARTMENT, "Silly-U Homeopathics", null));
+        testData.add(new BrageTestValue(ContributorType.EDITOR, RANDY_OLSON, null));
+        testData.add(new BrageTestValue(ContributorType.ILLUSTRATOR, RANDY_OLSON, null));
+        testData.add(new BrageTestValue(ContributorType.ORCID, "0000-0002-9079-593X", null));
+        testData.add(new BrageTestValue(ContributorType.OTHER, RANDY_OLSON, null));
+        testData.add(new BrageTestValue(ContributorType.UNQUALIFIED, RANDY_OLSON, null));
     }
 
     @Test
