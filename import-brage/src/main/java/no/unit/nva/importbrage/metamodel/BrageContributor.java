@@ -2,7 +2,13 @@ package no.unit.nva.importbrage.metamodel;
 
 import no.unit.nva.importbrage.DcValue;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
+import no.unit.nva.importbrage.metamodel.exceptions.UnknownRoleMappingException;
 import no.unit.nva.importbrage.metamodel.types.ContributorType;
+import no.unit.nva.model.Contributor;
+import no.unit.nva.model.Identity;
+import no.unit.nva.model.NameType;
+import no.unit.nva.model.Role;
+import no.unit.nva.model.exceptions.MalformedContributorException;
 import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
@@ -43,6 +49,27 @@ public class BrageContributor extends BrageValue {
 
     public ContributorType getContributorType() {
         return contributorType;
+    }
+
+    public Contributor getNvaContributor() throws MalformedContributorException, UnknownRoleMappingException {
+        var identity = new Identity.Builder()
+                .withName(getValue())
+                .withNameType(NameType.PERSONAL)
+                .build();
+        return new Contributor.Builder()
+                .withIdentity(identity)
+                .withRole(roleMapping())
+                .build();
+    }
+
+    private Role roleMapping() throws UnknownRoleMappingException {
+        switch (contributorType) {
+            case AUTHOR:
+            case UNQUALIFIED:
+                return Role.CREATOR;
+            default:
+                throw new UnknownRoleMappingException(contributorType.getTypeName());
+        }
     }
 
     @JacocoGenerated

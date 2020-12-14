@@ -7,6 +7,7 @@ version 'unspecified'
 
 dependencies {
     def jacksonVersion = '2.12.0'
+    implementation group: 'com.github.BIBSYSDEV', name: 'nva-datamodel-java', version: '0.11.1'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: jacksonVersion
     compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
