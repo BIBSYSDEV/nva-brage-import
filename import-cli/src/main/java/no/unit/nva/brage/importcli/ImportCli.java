@@ -1,6 +1,6 @@
 package no.unit.nva.brage.importcli;
 
-import no.unit.nva.brage.importcli.utils.JacocoGenerated;
+import nva.commons.utils.JacocoGenerated;
 import picocli.CommandLine;
 
 import java.io.File;

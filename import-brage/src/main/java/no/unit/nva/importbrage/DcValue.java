@@ -1,23 +1,18 @@
 package no.unit.nva.importbrage;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 
 @SuppressWarnings("PMD.UnusedPrivateField")
-@JacksonXmlRootElement(localName = "dcvalue")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class DcValue {
-    @JacksonXmlProperty(localName = "element")
+    @JacksonXmlProperty(localName = "element", isAttribute = true)
     private String element;
-    @JacksonXmlProperty(localName = "qualifier")
+    @JacksonXmlProperty(localName = "qualifier", isAttribute = true)
     private String qualifier;
-    @JacksonXmlProperty(localName = "language")
+    @JacksonXmlProperty(localName = "language", isAttribute = true)
     private String language;
-    @JacksonXmlText()
+    @JacksonXmlText
     private String value;
 
 
@@ -32,4 +27,26 @@ public class DcValue {
     public String getValue() {
         return value;
     }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setElement(String element) {
+        this.element = element;
+    }
+
+    public void setQualifier(String qualifier) {
+        this.qualifier = qualifier;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+
 }

@@ -1,11 +1,13 @@
 package no.unit.nva.importbrage.metamodel;
 
 import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
+import no.unit.nva.importbrage.metamodel.types.DateType;
+import nva.commons.utils.JacocoGenerated;
 
-import java.util.Arrays;
-import java.util.Locale;
+import java.util.Objects;
 
-public class BrageDate {
+public class BrageDate extends BrageValue {
     /*
         Generated from XML like:
 
@@ -26,61 +28,47 @@ public class BrageDate {
             dc.date.issued           Date of publication or distribution.
             dc.date.submitted        For theses/dissertations.
             dc.date.updated          The last time the item was updated via the SWORD interface.
+            dc.date                  Use qualified form if possible.
      */
 
-    private DateType dateType;
-    private String value;
+    private final DateType dateType;
 
-    public BrageDate(DcValue value) {
+    public BrageDate(DcValue value) throws InvalidQualifierException {
         this(value.getQualifier(), value.getValue());
     }
 
-    public BrageDate(String dateType, String value) {
+    public BrageDate(String dateType, String value) throws InvalidQualifierException {
         this(DateType.getTypeByName(dateType), value);
     }
 
     public BrageDate(DateType dateType, String value) {
+        super(value);
         this.dateType = dateType;
-        this.value = value;
     }
 
     public DateType getDateType() {
         return dateType;
     }
 
-    public String getvalue() {
-        return value;
+    @JacocoGenerated
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof BrageDate)) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        BrageDate brageDate = (BrageDate) o;
+        return getDateType() == brageDate.getDateType();
     }
 
-    public enum DateType {
-        ACCESSIONED("accessioned"),
-        AVAILABLE("available"),
-        COPYRIGHT("copyright"),
-        CREATED("created"),
-        EMBARGO_END_DATE("embargoenddate"),
-        ISSUED("issued"),
-        SUBMITTED("submitted"),
-        SWORD_UPDATED("updated");
-
-        private final String type;
-
-        DateType(String type) {
-            this.type = type;
-        }
-
-        public String getTypeName() {
-            return type;
-        }
-
-        /**
-         * Get the equivalent DateType by its string representation.
-         * @param typeName A string of a DateType.
-         * @return A corresponding DateType
-         */
-        public static DateType getTypeByName(String typeName) {
-            return Arrays.stream(values())
-                    .filter(value -> value.getTypeName().equals(typeName.toLowerCase(Locale.ROOT)))
-                    .findFirst().orElseThrow();
-        }
+    @JacocoGenerated
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getDateType());
     }
 }
