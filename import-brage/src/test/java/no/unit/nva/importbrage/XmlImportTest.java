@@ -119,6 +119,114 @@ class XmlImportTest {
         assertThat(publication, equalTo(testPair.getValue()));
     }
 
+    @Test
+    void xmlImportReturnsNullOnUnknownTypes() throws IOException {
+        var testValues = generateDcValuesWithUnknownType();
+        BragePublication publication = getBragePublication(testValues);
+        assertNull(publication);
+    }
+
+    @Test
+    void xmlImportLogsErrorWhenDcValueHasUnknownType() throws IOException {
+        var testValues = generateDcValuesWithUnknownType();
+        File file = generateXmlFile(testValues);
+        var xmlImport = new XmlImport();
+        xmlImport.map(file);
+        assertThat(logger.getMessages(), containsString(file.getAbsolutePath()));
+    }
+
+    @Test
+    void xmlImportCreatesErrorListWhenDcValueHasUnknownType() throws IOException {
+        var testValues = generateDcValuesWithUnknownType();
+        var xmlImport = new XmlImport();
+        File file = generateXmlFile(testValues);
+        xmlImport.map(file);
+        var errors = xmlImport.getErrors();
+        assertThat(errors, is(not(empty())));
+    }
+
+    @SuppressWarnings("unused") // we use "name" in the display name
+    @ParameterizedTest(name = "XmlImport allows name {0} — {1}")
+    @MethodSource("elementTypeProvider")
+    void xmlImportGeneratesBragePublicationWhenElementTypesArePresent(String value, ElementType type)
+            throws IOException {
+        var testPair = generateSimpleTestPair(type, value);
+        BragePublication publication = getBragePublication(testPair.getKey());
+        assertThat(publication, equalTo(testPair.getValue()));
+    }
+
+    @ParameterizedTest(name = "XmlImport disallows unqualified Coverage for \"{0}\"")
+    @NullAndEmptySource
+    void xmlImportReportsBragePublicationWhenCoverageIsUnqualified(String type) throws IOException {
+        var dublinCore = generateDublinCoreWithQualifierForElement(COVERAGE, type);
+        File file = generateXmlFile(dublinCore);
+        var xmlImport = new XmlImport();
+        var publication = xmlImport.map(file);
+        assertNull(publication);
+        var actual = String.join(DELIMITER, xmlImport.getErrors());
+        String expectedMessage = String.format(MESSAGE_TEMPLATE, COVERAGE, type, CoverageType.getAllowedValues());
+        assertThat(actual, containsString(expectedMessage));
+    }
+
+    @ParameterizedTest(name = "XmlImport creates report when qualifier is unknown for {0}")
+    @ValueSource(strings = {CONTRIBUTOR, COVERAGE, CREATOR, DATE, DESCRIPTION, FORMAT, IDENTIFIER, LANGUAGE,
+            PROVENANCE, PUBLISHER, RELATION, RIGHTS, SOURCE, SUBJECT, TITLE, TYPE})
+    void xmlImportReportsBragePublicationWhenQualifierIsUnknown(String type) throws IOException {
+        var dublinCore = generateDublinCoreWithQualifierForElement(type, NONSENSE);
+        File file = generateXmlFile(dublinCore);
+        var xmlImport = new XmlImport();
+        var publication = xmlImport.map(file);
+        assertNull(publication);
+        var actual = String.join(DELIMITER, xmlImport.getErrors());
+        String expectedMessage = String.format(MESSAGE_TEMPLATE, type, NONSENSE, getAllowedValues(type));
+        assertThat(actual, containsString(expectedMessage));
+    }
+
+    @Test
+    void xmlImportGeneratesBragePublicationWhenCreatorIsUnqualified() throws IOException {
+        var testPair = generateSimpleTestPair(CreatorType.UNQUALIFIED, RANDY_OLSON);
+        BragePublication publication = getBragePublication(testPair.getKey());
+        assertThat(publication, is(equalTo(testPair.getValue())));
+    }
+
+    @Test
+    void xmlImportReportsErrorsWhenCreatorIsQualified() throws IOException {
+        var testPair = generateDublinCoreWithQualifierForElement(CREATOR, NONSENSE);
+        File file = generateXmlFile(testPair);
+        var xmlImport = new XmlImport();
+        var publication = xmlImport.map(file);
+        assertNull(publication);
+        var actual = String.join(DELIMITER, xmlImport.getErrors());
+        var expected = String.format(MESSAGE_TEMPLATE, CREATOR, NONSENSE, CreatorType.getAllowedValues());
+        assertThat(actual, containsString(expected));
+    }
+
+
+    static Stream<Arguments> elementTypeProvider() {
+        Stream.Builder<Arguments> argumentsBuilder = Stream.builder();
+        var elementTypes = new ArrayList<ElementType>(Arrays.asList(ContributorType.values()));
+        elementTypes.addAll(Arrays.asList(CoverageType.values()));
+        elementTypes.addAll(Arrays.asList(CreatorType.values()));
+        elementTypes.addAll(Arrays.asList(DateType.values()));
+        elementTypes.addAll(Arrays.asList(DescriptionType.values()));
+        elementTypes.addAll(Arrays.asList(FormatType.values()));
+        elementTypes.addAll(Arrays.asList(IdentifierType.values()));
+        elementTypes.addAll(Arrays.asList(LanguageType.values()));
+        elementTypes.addAll(Arrays.asList(ProvenanceType.values()));
+        elementTypes.addAll(Arrays.asList(PublisherType.values()));
+        elementTypes.addAll(Arrays.asList(RelationType.values()));
+        elementTypes.addAll(Arrays.asList(RightsType.values()));
+        elementTypes.addAll(Arrays.asList(SourceType.values()));
+        elementTypes.addAll(Arrays.asList(SubjectType.values()));
+        elementTypes.addAll(Arrays.asList(TitleType.values()));
+        elementTypes.addAll(Arrays.asList(TypeBasic.values()));
+
+        for (ElementType elementType : elementTypes) {
+            argumentsBuilder.add(Arguments.of(elementType.getClass().getSimpleName(), elementType));
+        }
+        return argumentsBuilder.build();
+    }
+
     private AbstractMap.SimpleEntry<DublinCore, BragePublication> generateCompleteTestData() {
         var testData = new ArrayList<BrageTestValue>();
         addContributorValues(testData);
@@ -271,120 +379,12 @@ class XmlImportTest {
         testData.add(new BrageTestValue(ContributorType.UNQUALIFIED, RANDY_OLSON, null));
     }
 
-    @Test
-    void xmlImportReturnsNullOnUnknownTypes() throws IOException {
-        var testValues = generateDcValuesWithUnknownType();
-        BragePublication publication = getBragePublication(testValues);
-        assertNull(publication);
-    }
-
-    @Test
-    void xmlImportLogsErrorWhenDcValueHasUnknownType() throws IOException {
-        var testValues = generateDcValuesWithUnknownType();
-        File file = generateXmlFile(testValues);
-        var xmlImport = new XmlImport();
-        xmlImport.map(file);
-        assertThat(logger.getMessages(), containsString(file.getAbsolutePath()));
-    }
-
-    @Test
-    void xmlImportCreatesErrorListWhenDcValueHasUnknownType() throws IOException {
-        var testValues = generateDcValuesWithUnknownType();
-        var xmlImport = new XmlImport();
-        File file = generateXmlFile(testValues);
-        xmlImport.map(file);
-        var errors = xmlImport.getErrors();
-        assertThat(errors, is(not(empty())));
-    }
-
-    @SuppressWarnings("unused") // we use "name" in the display name
-    @ParameterizedTest(name = "XmlImport allows name {0} — {1}")
-    @MethodSource("elementTypeProvider")
-    void xmlImportGeneratesBragePublicationWhenElementTypesArePresent(String value, ElementType type)
-            throws IOException {
-        var testPair = generateSimpleTestPair(type, value);
-        BragePublication publication = getBragePublication(testPair.getKey());
-        assertThat(publication, equalTo(testPair.getValue()));
-    }
-
-    static Stream<Arguments> elementTypeProvider() {
-        Stream.Builder<Arguments> argumentsBuilder = Stream.builder();
-        var elementTypes = new ArrayList<ElementType>(Arrays.asList(ContributorType.values()));
-        elementTypes.addAll(Arrays.asList(CoverageType.values()));
-        elementTypes.addAll(Arrays.asList(CreatorType.values()));
-        elementTypes.addAll(Arrays.asList(DateType.values()));
-        elementTypes.addAll(Arrays.asList(DescriptionType.values()));
-        elementTypes.addAll(Arrays.asList(FormatType.values()));
-        elementTypes.addAll(Arrays.asList(IdentifierType.values()));
-        elementTypes.addAll(Arrays.asList(LanguageType.values()));
-        elementTypes.addAll(Arrays.asList(ProvenanceType.values()));
-        elementTypes.addAll(Arrays.asList(PublisherType.values()));
-        elementTypes.addAll(Arrays.asList(RelationType.values()));
-        elementTypes.addAll(Arrays.asList(RightsType.values()));
-        elementTypes.addAll(Arrays.asList(SourceType.values()));
-        elementTypes.addAll(Arrays.asList(SubjectType.values()));
-        elementTypes.addAll(Arrays.asList(TitleType.values()));
-        elementTypes.addAll(Arrays.asList(TypeBasic.values()));
-
-        for (ElementType elementType : elementTypes) {
-            argumentsBuilder.add(Arguments.of(elementType.getClass().getSimpleName(), elementType));
-        }
-        return argumentsBuilder.build();
-    }
-
-    @ParameterizedTest(name = "XmlImport disallows unqualified Coverage for \"{0}\"")
-    @NullAndEmptySource
-    void xmlImportReportsBragePublicationWhenCoverageIsUnqualified(String type) throws IOException {
-        var dublinCore = generateDublinCoreWithQualifierForElement(COVERAGE, type);
-        File file = generateXmlFile(dublinCore);
-        var xmlImport = new XmlImport();
-        var publication = xmlImport.map(file);
-        assertNull(publication);
-        var actual = String.join(DELIMITER, xmlImport.getErrors());
-        String expectedMessage = String.format(MESSAGE_TEMPLATE, COVERAGE, type, CoverageType.getAllowedValues());
-        assertThat(actual, containsString(expectedMessage));
-    }
-
-    @ParameterizedTest(name = "XmlImport creates report when qualifier is unknown for {0}")
-    @ValueSource(strings = {CONTRIBUTOR, COVERAGE, CREATOR, DATE, DESCRIPTION, FORMAT, IDENTIFIER, LANGUAGE,
-            PROVENANCE, PUBLISHER, RELATION, RIGHTS, SOURCE, SUBJECT, TITLE, TYPE})
-    void xmlImportReportsBragePublicationWhenQualifierIsUnknown(String type) throws IOException {
-        var dublinCore = generateDublinCoreWithQualifierForElement(type, NONSENSE);
-        File file = generateXmlFile(dublinCore);
-        var xmlImport = new XmlImport();
-        var publication = xmlImport.map(file);
-        assertNull(publication);
-        var actual = String.join(DELIMITER, xmlImport.getErrors());
-        String expectedMessage = String.format(MESSAGE_TEMPLATE, type, NONSENSE, getAllowedValues(type));
-        assertThat(actual, containsString(expectedMessage));
-    }
-
-    @Test
-    void xmlImportGeneratesBragePublicationWhenCreatorIsUnqualified() throws IOException {
-        var testPair = generateSimpleTestPair(CreatorType.UNQUALIFIED, RANDY_OLSON);
-        BragePublication publication = getBragePublication(testPair.getKey());
-        assertThat(publication, is(equalTo(testPair.getValue())));
-    }
-
     private AbstractMap.SimpleEntry<DublinCore, BragePublication> generateSimpleTestPair(
             ElementType type, String value) {
         var language = type.isLanguageBased() ? EN_US : null;
         return generateTestPair(
                 List.of(new BrageTestValue(type, value, language)));
     }
-
-    @Test
-    void xmlImportReportsErrorsWhenCreatorIsQualified() throws IOException {
-        var testPair = generateDublinCoreWithQualifierForElement(CREATOR, NONSENSE);
-        File file = generateXmlFile(testPair);
-        var xmlImport = new XmlImport();
-        var publication = xmlImport.map(file);
-        assertNull(publication);
-        var actual = String.join(DELIMITER, xmlImport.getErrors());
-        var expected = String.format(MESSAGE_TEMPLATE, CREATOR, NONSENSE, CreatorType.getAllowedValues());
-        assertThat(actual, containsString(expected));
-    }
-
 
     private String getAllowedValues(String type) {
         switch (type) {

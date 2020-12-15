@@ -7,6 +7,7 @@ public enum CoverageType implements ElementType {
     TEMPORAL("temporal");
 
     public static final String COVERAGE = "coverage";
+    public static final ElementType UNQUALIFIED_TYPE_NOT_ALLOWED = null;
 
     String type;
 
@@ -31,7 +32,7 @@ public enum CoverageType implements ElementType {
      * @return A corresponding CoverageType
      */
     public static CoverageType getTypeByName(String candidate) throws InvalidQualifierException {
-        return (CoverageType) ElementType.getTypeByName(COVERAGE, candidate, values(), null);
+        return (CoverageType) ElementType.getTypeByName(COVERAGE, candidate, values(), UNQUALIFIED_TYPE_NOT_ALLOWED);
     }
 
     /**

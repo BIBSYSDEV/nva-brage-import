@@ -3,7 +3,6 @@ package no.unit.nva.importbrage.metamodel.types;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.function.Supplier;
 
 import static java.util.Objects.isNull;
@@ -29,19 +28,19 @@ public interface ElementType {
      */
     static ElementType getTypeByName(String type, String candidate, ElementType[] values, ElementType unqualifiedType)
             throws InvalidQualifierException {
-        if (isNull(unqualifiedType) && isNullOrEmpty(candidate)) {
+        if (cannotBeUnqualifiedButCandidateIsUnqualified(candidate, unqualifiedType)) {
             throw new InvalidQualifierException(type, candidate, getAllowedValues(values));
         }
-        return isNullOrEmpty(candidate) ? unqualifiedType
-                : Arrays.stream(values)
-                .filter(value -> nonNull(value.getTypeName()))
-                .filter(value -> value.getTypeName().equals(candidate.toLowerCase(Locale.ROOT)))
-                .findFirst()
-                .orElseThrow(ElementType.getInvalidQualifierExceptionSupplier(type, candidate, values));
+        return isUnqualified(candidate) ? unqualifiedType : getQualifiedElementType(type, candidate, values);
     }
 
-    static boolean isNullOrEmpty(String candidate) {
-        return isNull(candidate) || candidate.isEmpty();
+    private static ElementType getQualifiedElementType(String type, String candidate, ElementType[] values)
+            throws InvalidQualifierException {
+        return Arrays.stream(values)
+                .filter(value -> nonNull(value.getTypeName()))
+                .filter(value -> value.getTypeName().equalsIgnoreCase(candidate))
+                .findFirst()
+                .orElseThrow(ElementType.getInvalidQualifierExceptionSupplier(type, candidate, values));
     }
 
     /**
@@ -61,4 +60,15 @@ public interface ElementType {
         return () -> new InvalidQualifierException(type, candidate, getAllowedValues(values));
     }
 
+    private static boolean cannotBeUnqualifiedButCandidateIsUnqualified(String candidate, ElementType unqualifiedType) {
+        return canNotBeUnqualified(unqualifiedType) && isUnqualified(candidate);
+    }
+
+    private static boolean canNotBeUnqualified(ElementType unqualifiedType) {
+        return isNull(unqualifiedType);
+    }
+
+    static boolean isUnqualified(String candidate) {
+        return isNull(candidate) || candidate.isEmpty();
+    }
 }
