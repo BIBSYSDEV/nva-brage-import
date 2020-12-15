@@ -246,7 +246,7 @@ class XmlImportTest {
         addTitleValues(testData);
         addTypeValues(testData);
 
-        return generateTestPair(testData);
+        return generateInputValueAndExpectedResponse(testData);
     }
 
     private void addTypeValues(ArrayList<BrageTestValue> testData) {
@@ -382,7 +382,7 @@ class XmlImportTest {
     private AbstractMap.SimpleEntry<DublinCore, BragePublication> generateSimpleTestPair(
             ElementType type, String value) {
         var language = type.isLanguageBased() ? EN_US : null;
-        return generateTestPair(
+        return generateInputValueAndExpectedResponse(
                 List.of(new BrageTestValue(type, value, language)));
     }
 
@@ -459,7 +459,7 @@ class XmlImportTest {
         mapper.writeValue(file, dublinCore);
     }
 
-    private AbstractMap.SimpleEntry<DublinCore, BragePublication> generateTestPair(
+    private AbstractMap.SimpleEntry<DublinCore, BragePublication> generateInputValueAndExpectedResponse(
             List<BrageTestValue> data) {
         List<DcValue> dcValues = new ArrayList<>();
         BragePublication publication = new BragePublication();
