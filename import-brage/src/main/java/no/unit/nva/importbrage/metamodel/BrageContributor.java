@@ -51,6 +51,12 @@ public class BrageContributor extends BrageValue {
         return contributorType;
     }
 
+    /**
+     * Converts a BrageContributor to an NVA Contributor.
+     * @return An NVA Contributor.
+     * @throws MalformedContributorException If the contributor cannot be constructed from the values.
+     * @throws UnknownRoleMappingException If the contributor role cannot be mapped to an existing NVA role.
+     */
     public Contributor getNvaContributor() throws MalformedContributorException, UnknownRoleMappingException {
         var identity = new Identity.Builder()
                 .withName(getValue())
