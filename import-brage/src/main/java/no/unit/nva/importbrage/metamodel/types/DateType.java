@@ -2,22 +2,28 @@ package no.unit.nva.importbrage.metamodel.types;
 
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 
+import static no.unit.nva.importbrage.metamodel.types.DateType.DateValueType.DISCARD_VALUE;
+import static no.unit.nva.importbrage.metamodel.types.DateType.DateValueType.STRING;
+import static no.unit.nva.importbrage.metamodel.types.DateType.DateValueType.TIMESTAMP;
+
 public enum DateType implements ElementType {
-    ACCESSIONED("accessioned"),
-    AVAILABLE("available"),
-    COPYRIGHT("copyright"),
-    CREATED("created"),
-    EMBARGO_END_DATE("embargoenddate"),
-    ISSUED("issued"),
-    SUBMITTED("submitted"),
-    SWORD_UPDATED("updated"),
-    UNQUALIFIED(null);
+    ACCESSIONED("accessioned", TIMESTAMP),
+    AVAILABLE("available", TIMESTAMP),
+    COPYRIGHT("copyright", DISCARD_VALUE),
+    CREATED("created", TIMESTAMP),  // Cristin import dates
+    EMBARGO_END_DATE("embargoenddate", STRING),
+    ISSUED("issued", STRING),
+    SUBMITTED("submitted", STRING), // only on theses
+    SWORD_UPDATED("updated", DISCARD_VALUE),
+    UNQUALIFIED(null, STRING);
 
     public static final String DATE = "date";
     private final String type;
+    private final DateValueType valueType;
 
-    DateType(String type) {
+    DateType(String type, DateValueType valueType) {
         this.type = type;
+        this.valueType = valueType;
     }
 
     @Override
@@ -28,6 +34,10 @@ public enum DateType implements ElementType {
     @Override
     public boolean isLanguageBased() {
         return false;
+    }
+
+    public DateValueType getValueType() {
+        return this.valueType;
     }
 
     /**
@@ -46,5 +56,11 @@ public enum DateType implements ElementType {
      */
     public static String getAllowedValues() {
         return ElementType.getAllowedValues(values());
+    }
+
+    public enum DateValueType {
+        TIMESTAMP,
+        STRING,
+        DISCARD_VALUE
     }
 }
