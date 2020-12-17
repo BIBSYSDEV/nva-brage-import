@@ -21,6 +21,7 @@ import no.unit.nva.importbrage.metamodel.BrageSource;
 import no.unit.nva.importbrage.metamodel.BrageSubject;
 import no.unit.nva.importbrage.metamodel.BrageTitle;
 import no.unit.nva.importbrage.metamodel.BrageType;
+import no.unit.nva.importbrage.metamodel.exceptions.UnknownRoleMappingException;
 import no.unit.nva.importbrage.metamodel.types.ContributorType;
 import no.unit.nva.importbrage.metamodel.types.CoverageType;
 import no.unit.nva.importbrage.metamodel.types.CreatorType;
@@ -38,6 +39,13 @@ import no.unit.nva.importbrage.metamodel.types.SourceType;
 import no.unit.nva.importbrage.metamodel.types.SubjectType;
 import no.unit.nva.importbrage.metamodel.types.TitleType;
 import no.unit.nva.importbrage.metamodel.types.TypeBasic;
+import no.unit.nva.model.Contributor;
+import no.unit.nva.model.EntityDescription;
+import no.unit.nva.model.Identity;
+import no.unit.nva.model.NameType;
+import no.unit.nva.model.Publication;
+import no.unit.nva.model.Role;
+import no.unit.nva.model.exceptions.MalformedContributorException;
 import nva.commons.utils.log.LogUtils;
 import nva.commons.utils.log.TestAppender;
 import org.junit.jupiter.api.BeforeEach;
@@ -113,10 +121,44 @@ class XmlImportTest {
 
     @Test
     void xmlImportLoadsData() throws IOException {
-
         AbstractMap.SimpleEntry<DublinCore, BragePublication> testPair = generateCompleteTestData();
         BragePublication publication = getBragePublication(testPair.getKey());
         assertThat(publication, equalTo(testPair.getValue()));
+    }
+
+    @ParameterizedTest(name = "Exported Publication with contributor type {0} has expected mapping to {1}")
+    @MethodSource("generateContributorRoleMapping")
+    void xmlImportBragePublicationHasPublicationWithValidValueForContributor(String type, Role role)
+            throws IOException, MalformedContributorException, UnknownRoleMappingException {
+        var dcValue = new DcValueBuilder()
+                .withElement(CONTRIBUTOR)
+                .withQualifier(type)
+                .withValue(RANDY_OLSON)
+                .withLanguage(EN_US)
+                .build();
+        var dublinCore = new DublinCoreBuilder()
+                .withDcValues(List.of(dcValue))
+                .build();
+        var publication = new XmlImport().map(generateXmlFile(dublinCore));
+
+        assert publication != null;
+        var nvaPublication = publication.asNvaPublication();
+
+        Identity identity = new Identity.Builder()
+                .withName(RANDY_OLSON)
+                .withNameType(NameType.PERSONAL)
+                .build();
+        Contributor contributor = new Contributor.Builder()
+                .withRole(role)
+                .withIdentity(identity)
+                .build();
+        EntityDescription entityDescription = new EntityDescription.Builder()
+                .withContributors(List.of(contributor))
+                .build();
+        Publication expected = new Publication.Builder()
+                .withEntityDescription(entityDescription)
+                .build();
+        assertThat(nvaPublication, equalTo(expected));
     }
 
     @Test
@@ -201,6 +243,15 @@ class XmlImportTest {
         assertThat(actual, containsString(expected));
     }
 
+    private static Stream<Arguments> generateContributorRoleMapping() {
+        return Stream.of(
+                Arguments.of(ContributorType.ADVISOR.getTypeName(), Role.ADVISOR),
+                Arguments.of(ContributorType.AUTHOR.getTypeName(), Role.CREATOR),
+                Arguments.of(ContributorType.EDITOR.getTypeName(), Role.EDITOR),
+                Arguments.of(ContributorType.ILLUSTRATOR.getTypeName(), Role.ILLUSTRATOR),
+                Arguments.of(ContributorType.UNQUALIFIED.getTypeName(), Role.CREATOR)
+        );
+    }
 
     static Stream<Arguments> elementTypeProvider() {
         Stream.Builder<Arguments> argumentsBuilder = Stream.builder();
