@@ -38,6 +38,11 @@ import java.util.Objects;
 public class BrageDate extends BrageValue {
     public static final String DATE_ELEMENT_DELIMITER = "-";
     public static final String ISO_DATE_REGEX = "^\\d{4}(-\\d{2}(-\\d{2})?)?$";
+    public static final int YEAR_INDEX = 0;
+    public static final int YEAR_ONLY = 1;
+    public static final int MONTH_INDEX = 1;
+    public static final int YEAR_MONTH_ONLY = 3;
+    public static final int DAY_INDEX = 2;
 
     private final DateType dateType;
 
@@ -86,24 +91,31 @@ public class BrageDate extends BrageValue {
         if (isNotStringDate()) {
             throw new IllegalDateConversionException(getValue(), dateType);
         }
-        var value = getValue();
-        return convertToPublicationDate(value);
+        return convertToPublicationDate();
     }
 
-    private PublicationDate convertToPublicationDate(String value) throws InvalidPublicationDateException {
-        validate(value);
+    private PublicationDate convertToPublicationDate() throws InvalidPublicationDateException {
+        validate(getValue());
 
         var rawDate = getValue().split(DATE_ELEMENT_DELIMITER);
-        var year = rawDate[0];
-        var size = rawDate.length;
-        var month = size > 1 ? rawDate[1] : null;
-        var day = size > 2 ? rawDate[2] : null;
 
         return new PublicationDate.Builder()
-                .withYear(year)
-                .withMonth(month)
-                .withDay(day)
+                .withYear(getYear(rawDate))
+                .withMonth(getMonth(rawDate))
+                .withDay(getDay(rawDate))
                 .build();
+    }
+
+    private String getDay(String[] rawDate) {
+        return rawDate.length == YEAR_MONTH_ONLY ? rawDate[DAY_INDEX] : null;
+    }
+
+    private String getYear(String[] rawDate) {
+        return rawDate[YEAR_INDEX];
+    }
+
+    private String getMonth(String[] rawDate) {
+        return rawDate.length > YEAR_ONLY ? rawDate[MONTH_INDEX] : null;
     }
 
     private boolean isNotInstantDate() {
