@@ -7,7 +7,6 @@ import no.unit.nva.importbrage.metamodel.types.ContributorType;
 import no.unit.nva.model.Contributor;
 import no.unit.nva.model.Identity;
 import no.unit.nva.model.NameType;
-import no.unit.nva.model.Role;
 import no.unit.nva.model.exceptions.MalformedContributorException;
 import nva.commons.utils.JacocoGenerated;
 
@@ -64,18 +63,8 @@ public class BrageContributor extends BrageValue {
                 .build();
         return new Contributor.Builder()
                 .withIdentity(identity)
-                .withRole(roleMapping())
+                .withRole(contributorType.getNvaMapping())
                 .build();
-    }
-
-    private Role roleMapping() throws UnknownRoleMappingException {
-        switch (contributorType) {
-            case AUTHOR:
-            case UNQUALIFIED:
-                return Role.CREATOR;
-            default:
-                throw new UnknownRoleMappingException(contributorType.getTypeName());
-        }
     }
 
     @JacocoGenerated

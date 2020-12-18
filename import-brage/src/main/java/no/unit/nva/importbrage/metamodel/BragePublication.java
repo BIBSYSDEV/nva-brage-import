@@ -1,5 +1,10 @@
 package no.unit.nva.importbrage.metamodel;
 
+import no.unit.nva.importbrage.metamodel.exceptions.UnknownRoleMappingException;
+import no.unit.nva.model.Contributor;
+import no.unit.nva.model.EntityDescription;
+import no.unit.nva.model.Publication;
+import no.unit.nva.model.exceptions.MalformedContributorException;
 import nva.commons.utils.JacocoGenerated;
 
 import java.util.ArrayList;
@@ -305,5 +310,25 @@ public class BragePublication {
         return Objects.hash(getContributors(), getCoverage(), getDates(), getIdentifiers(), getDescriptions(),
                 getCreators(), getFormats(), getLanguages(), getProvenances(), getPublishers(), getRelations(),
                 getRights(), getSources(), getSubjects(), getTitles(), getTypes());
+    }
+
+    /**
+     * Produces an NVA publication representation of the Brage data.
+     * @return NVA Publication.
+     * @throws UnknownRoleMappingException If the Contributor cannot be mapped.
+     * @throws MalformedContributorException If the Contributor cannot be created.
+     */
+    public Publication asNvaPublication() throws UnknownRoleMappingException, MalformedContributorException {
+        var nvaContributors = new ArrayList<Contributor>();
+        for (BrageContributor contributor : contributors) {
+            nvaContributors.add(contributor.getNvaContributor());
+        }
+        var entityDescription = new EntityDescription.Builder()
+                .withContributors(nvaContributors)
+                .build();
+
+        return new Publication.Builder()
+                .withEntityDescription(entityDescription)
+                .build();
     }
 }

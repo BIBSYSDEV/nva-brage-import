@@ -1,22 +1,28 @@
 package no.unit.nva.importbrage.metamodel.types;
 
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
+import no.unit.nva.importbrage.metamodel.exceptions.UnknownRoleMappingException;
+import no.unit.nva.model.Role;
+
+import static java.util.Objects.isNull;
 
 public enum ContributorType implements ElementType {
-    ADVISOR("advisor"),
-    AUTHOR("author"),
-    DEPARTMENT("department"),
-    EDITOR("editor"),
-    ILLUSTRATOR("illustrator"),
-    ORCID("orcid"),
-    OTHER("other"),
-    UNQUALIFIED(null);
+    ADVISOR("advisor", Role.ADVISOR),
+    AUTHOR("author", Role.CREATOR),
+    DEPARTMENT("department", null),
+    EDITOR("editor", Role.EDITOR),
+    ILLUSTRATOR("illustrator", Role.ILLUSTRATOR),
+    ORCID("orcid", null),
+    OTHER("other", null),
+    UNQUALIFIED(null, Role.CREATOR);
 
     public static final String CONTRIBUTOR = "contributor";
     private final String typeName;
+    private final Role role;
 
-    ContributorType(String typeName) {
+    ContributorType(String typeName, Role role) {
         this.typeName = typeName;
+        this.role = role;
     }
 
     @Override
@@ -45,5 +51,17 @@ public enum ContributorType implements ElementType {
      */
     public static String getAllowedValues() {
         return ElementType.getAllowedValues(values());
+    }
+
+    /**
+     * Maps the Brage ContributorType to an NVA Role.
+     * @return NVA Role.
+     * @throws UnknownRoleMappingException If the mapping is unknown.
+     */
+    public Role getNvaMapping() throws UnknownRoleMappingException {
+        if (isNull(role)) {
+            throw new UnknownRoleMappingException(typeName);
+        }
+        return role;
     }
 }

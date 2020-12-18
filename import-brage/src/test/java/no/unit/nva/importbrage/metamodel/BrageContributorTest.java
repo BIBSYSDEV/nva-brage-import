@@ -39,8 +39,7 @@ class BrageContributorTest {
 
     @ParameterizedTest(name = "Brage Contributor with contributor type {0} can be mapped to an NVA role")
     @MethodSource("unknownContributorMappingPairs")
-    void getNvaContributorThrowsUnknownRoleMappingExceptionWhenInputMappingIsUnknown(ContributorType contributorType)
-            throws MalformedContributorException, UnknownRoleMappingException {
+    void getNvaContributorThrowsUnknownRoleMappingExceptionWhenInputMappingIsUnknown(ContributorType contributorType) {
         Executable executable = () -> new BrageContributor(contributorType, ANY_NAME).getNvaContributor();
         var actual = assertThrows(UnknownRoleMappingException.class, executable);
         String expected = String.format(MESSAGE_TEMPLATE, contributorType.getTypeName());
@@ -60,6 +59,9 @@ class BrageContributorTest {
 
     private static Stream<Arguments> contributorMappingPairs() {
         return Stream.of(
+                Arguments.of(new AbstractMap.SimpleEntry<>(ContributorType.ADVISOR, Role.ADVISOR)),
+                Arguments.of(new AbstractMap.SimpleEntry<>(ContributorType.EDITOR, Role.EDITOR)),
+                Arguments.of(new AbstractMap.SimpleEntry<>(ContributorType.ILLUSTRATOR, Role.ILLUSTRATOR)),
                 Arguments.of(new AbstractMap.SimpleEntry<>(ContributorType.AUTHOR, Role.CREATOR)),
                 Arguments.of(new AbstractMap.SimpleEntry<>(ContributorType.UNQUALIFIED, Role.CREATOR))
         );
@@ -67,9 +69,6 @@ class BrageContributorTest {
 
     private static Stream<Arguments> unknownContributorMappingPairs() {
         return Stream.of(
-                Arguments.of(ContributorType.ADVISOR),
-                Arguments.of(ContributorType.EDITOR),
-                Arguments.of(ContributorType.ILLUSTRATOR),
                 Arguments.of(ContributorType.DEPARTMENT),
                 Arguments.of(ContributorType.ORCID),
                 Arguments.of(ContributorType.OTHER)
