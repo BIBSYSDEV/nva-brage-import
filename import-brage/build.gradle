@@ -2,5 +2,4 @@ dependencies {
     implementation project(':dublin-core')
     implementation project(':nsd-dbh-import')
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.6.28'
-    testImplementation project(':testing')
 }
