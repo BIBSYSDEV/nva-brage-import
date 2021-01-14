@@ -1,6 +1,6 @@
 package no.unit.nva.importbrage.metamodel;
 
-import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.brage.dublincore.DcValue;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import no.unit.nva.importbrage.metamodel.types.TitleType;
 import nva.commons.utils.JacocoGenerated;
@@ -15,7 +15,7 @@ public class BrageTitle extends BrageLanguageValue {
     }
 
     public BrageTitle(String qualifier, String value, String language) throws InvalidQualifierException {
-        this(TitleType.getTypeByName(qualifier), value, language);
+        this(TitleType.getTypeByName(qualifier, value), value, language);
     }
 
     public BrageTitle(TitleType titleType, String value, String language) {
@@ -25,6 +25,14 @@ public class BrageTitle extends BrageLanguageValue {
 
     public TitleType getTitleType() {
         return titleType;
+    }
+
+    public boolean isMainTitle() {
+        return TitleType.UNQUALIFIED.equals(titleType);
+    }
+
+    public boolean isAlternativeTitle() {
+        return titleType.equals(TitleType.ALTERNATIVE);
     }
 
     @JacocoGenerated

@@ -3,7 +3,7 @@ package no.unit.nva.importbrage.metamodel.types;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 
 public enum PublisherType implements ElementType {
-    UNQUALIFIED(null);
+    UNQUALIFIED("none");
 
     public static final String PUBLISHER = "publisher";
     private final String typeName;
@@ -13,13 +13,18 @@ public enum PublisherType implements ElementType {
     }
 
     @Override
-    public String getTypeName() {
-        return typeName;
+    public String getName() {
+        return PUBLISHER;
     }
 
     @Override
-    public boolean isLanguageBased() {
-        return true;
+    public ElementType[] getValues() {
+        return values();
+    }
+
+    @Override
+    public String getQualifier() {
+        return typeName;
     }
 
     /**
@@ -28,15 +33,7 @@ public enum PublisherType implements ElementType {
      * @param candidate A string of a PublisherType.
      * @return A corresponding PublisherType
      */
-    public static PublisherType getTypeByName(String candidate) throws InvalidQualifierException {
-        return (PublisherType) ElementType.getTypeByName(PUBLISHER, candidate, values(), UNQUALIFIED);
-    }
-
-    /**
-     * Generates a string representation of the allowed type values.
-     * @return A string representation of the allowed values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    public static PublisherType getTypeByName(String candidate, String value) throws InvalidQualifierException {
+        return (PublisherType) ElementType.getTypeByName(PUBLISHER, candidate, values(), UNQUALIFIED, value);
     }
 }

@@ -16,13 +16,18 @@ public enum CoverageType implements ElementType {
     }
 
     @Override
-    public String getTypeName() {
-        return type;
+    public String getName() {
+        return COVERAGE;
     }
 
     @Override
-    public boolean isLanguageBased() {
-        return true;
+    public ElementType[] getValues() {
+        return values();
+    }
+
+    @Override
+    public String getQualifier() {
+        return type;
     }
 
     /**
@@ -31,15 +36,11 @@ public enum CoverageType implements ElementType {
      * @param candidate A string of a CoverageType.
      * @return A corresponding CoverageType
      */
-    public static CoverageType getTypeByName(String candidate) throws InvalidQualifierException {
-        return (CoverageType) ElementType.getTypeByName(COVERAGE, candidate, values(), UNQUALIFIED_TYPE_NOT_ALLOWED);
-    }
-
-    /**
-     * Generates a string representation of the allowed type values.
-     * @return A string representation of the allowed values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    public static CoverageType getTypeByName(String candidate, String value) throws InvalidQualifierException {
+        return (CoverageType) ElementType.getTypeByName(COVERAGE,
+                candidate,
+                values(),
+                UNQUALIFIED_TYPE_NOT_ALLOWED,
+                value);
     }
 }

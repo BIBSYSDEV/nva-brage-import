@@ -9,7 +9,7 @@ import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
  */
 public enum TitleType implements ElementType {
     ALTERNATIVE("alternative"),
-    UNQUALIFIED(null);
+    UNQUALIFIED("none");
 
     public static final String TITLE = "title";
     private final String typeName;
@@ -19,13 +19,18 @@ public enum TitleType implements ElementType {
     }
 
     @Override
-    public String getTypeName() {
-        return typeName;
+    public String getName() {
+        return TITLE;
     }
 
     @Override
-    public boolean isLanguageBased() {
-        return true;
+    public ElementType[] getValues() {
+        return values();
+    }
+
+    @Override
+    public String getQualifier() {
+        return typeName;
     }
 
     /**
@@ -34,15 +39,7 @@ public enum TitleType implements ElementType {
      * @param candidate A string of a TitleType.
      * @return A corresponding TitleType
      */
-    public static TitleType getTypeByName(String candidate) throws InvalidQualifierException {
-        return (TitleType) ElementType.getTypeByName(TITLE, candidate, values(), UNQUALIFIED);
-    }
-
-    /**
-     * Generates a string representation of the allowed type values.
-     * @return A string representation of the allowed values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    public static TitleType getTypeByName(String candidate, String value) throws InvalidQualifierException {
+        return (TitleType) ElementType.getTypeByName(TITLE, candidate, values(), UNQUALIFIED, value);
     }
 }

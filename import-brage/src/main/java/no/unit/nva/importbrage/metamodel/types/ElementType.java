@@ -12,9 +12,11 @@ import static java.util.stream.Collectors.joining;
 public interface ElementType {
     String DELIMITER = ", ";
 
-    String getTypeName();
+    String getName();
 
-    boolean isLanguageBased();
+    ElementType[] getValues();
+
+    String getQualifier();
 
     /**
      * Gets a ElementType implementation by its string name.
@@ -26,21 +28,28 @@ public interface ElementType {
      * @return An ElementType.
      * @throws InvalidQualifierException If the candidate does not match a valid ElementType in the values.
      */
-    static ElementType getTypeByName(String type, String candidate, ElementType[] values, ElementType unqualifiedType)
+    static ElementType getTypeByName(String type,
+                                     String candidate,
+                                     ElementType[] values,
+                                     ElementType unqualifiedType,
+                                     String value)
             throws InvalidQualifierException {
         if (cannotBeUnqualifiedButCandidateIsUnqualified(candidate, unqualifiedType)) {
-            throw new InvalidQualifierException(type, candidate, getAllowedValues(values));
+            throw new InvalidQualifierException(type, candidate, getAllowedValues(values), value);
         }
-        return isUnqualified(candidate) ? unqualifiedType : getQualifiedElementType(type, candidate, values);
+        return isUnqualified(candidate) ? unqualifiedType : getQualifiedElementType(type, candidate, values, value);
     }
 
-    private static ElementType getQualifiedElementType(String type, String candidate, ElementType[] values)
+    private static ElementType getQualifiedElementType(String type,
+                                                       String candidate,
+                                                       ElementType[] values,
+                                                       String value)
             throws InvalidQualifierException {
         return Arrays.stream(values)
-                .filter(value -> nonNull(value.getTypeName()))
-                .filter(value -> value.getTypeName().equalsIgnoreCase(candidate))
+                .filter(qualifier -> nonNull(qualifier.getQualifier()))
+                .filter(qualifier -> qualifier.getQualifier().equalsIgnoreCase(candidate))
                 .findFirst()
-                .orElseThrow(ElementType.getInvalidQualifierExceptionSupplier(type, candidate, values));
+                .orElseThrow(ElementType.getInvalidQualifierExceptionSupplier(type, candidate, values, value));
     }
 
     /**
@@ -50,14 +59,15 @@ public interface ElementType {
      */
     static String getAllowedValues(ElementType[] values) {
         return Arrays.stream(values)
-                .map(ElementType::getTypeName)
+                .map(ElementType::getQualifier)
                 .collect(joining(DELIMITER));
     }
 
     private static Supplier<InvalidQualifierException> getInvalidQualifierExceptionSupplier(String type,
                                                                                             String candidate,
-                                                                                            ElementType[] values) {
-        return () -> new InvalidQualifierException(type, candidate, getAllowedValues(values));
+                                                                                            ElementType[] values,
+                                                                                            String value) {
+        return () -> new InvalidQualifierException(type, candidate, getAllowedValues(values), value);
     }
 
     private static boolean cannotBeUnqualifiedButCandidateIsUnqualified(String candidate, ElementType unqualifiedType) {

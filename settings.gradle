@@ -1,4 +1,7 @@
 rootProject.name = 'nva-brage-import'
 include 'import-cli'
 include 'import-brage'
+include 'nsd-dbh-import'
+include 'testing'
+include 'dublin-core'
 

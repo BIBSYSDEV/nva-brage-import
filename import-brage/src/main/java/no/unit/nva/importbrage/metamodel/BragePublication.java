@@ -1,36 +1,30 @@
 package no.unit.nva.importbrage.metamodel;
 
-import no.unit.nva.importbrage.metamodel.exceptions.UnknownRoleMappingException;
-import no.unit.nva.model.Contributor;
-import no.unit.nva.model.EntityDescription;
-import no.unit.nva.model.Publication;
-import no.unit.nva.model.exceptions.MalformedContributorException;
 import nva.commons.utils.JacocoGenerated;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static java.util.Objects.isNull;
-
 @SuppressWarnings({"PMD.GodClass", "PMD.TooManyFields"})
 public class BragePublication {
-    private List<BrageContributor> contributors;
-    private List<BrageCoverage> coverage;
-    private List<BrageDate> dates;
-    private List<BrageIdentifier> identifiers;
-    private List<BrageDescription> descriptions;
-    private List<BrageCreator> creators;
-    private List<BrageFormat> formats;
-    private List<BrageLanguage> languages;
-    private List<BrageProvenance> provenances;
-    private List<BragePublisher> publishers;
-    private List<BrageRelation> relations;
-    private List<BrageRights> rights;
-    private List<BrageSource> sources;
-    private List<BrageSubject> subjects;
-    private List<BrageTitle> titles;
-    private List<BrageType> types;
+    private final List<BrageContributor> contributors = new ArrayList<>();
+    private final List<BrageCoverage> coverage = new ArrayList<>();
+    private final List<BrageDate> dates = new ArrayList<>();
+    private final List<BrageIdentifier> identifiers = new ArrayList<>();
+    private final List<BrageDescription> descriptions = new ArrayList<>();
+    private final List<BrageCreator> creators = new ArrayList<>();
+    private final List<BrageFormat> formats = new ArrayList<>();
+    private final List<BrageLanguage> languages = new ArrayList<>();
+    private final List<BrageProvenance> provenances = new ArrayList<>();
+    private final List<BragePublisher> publishers = new ArrayList<>();
+    private final List<BrageRelation> relations = new ArrayList<>();
+    private final List<BrageRights> rights = new ArrayList<>();
+    private final List<BrageSource> sources = new ArrayList<>();
+    private final List<BrageSubject> subjects = new ArrayList<>();
+    private final List<BrageTitle> titles = new ArrayList<>();
+    private final List<BrageType> types = new ArrayList<>();
+
 
     public BragePublication() {
 
@@ -102,177 +96,146 @@ public class BragePublication {
 
     /**
      * Add a single contributor.
+     *
      * @param brageContributor a contributor.
      */
     public void addContributor(BrageContributor brageContributor) {
-        if (isNull(contributors)) {
-            contributors = new ArrayList<>();
-        }
+        
         contributors.add(brageContributor);
     }
 
     /**
      * Add a single coverage statement.
+     *
      * @param brageCoverage A coverage statement.
      */
     public void addCoverage(BrageCoverage brageCoverage) {
-        if (isNull(coverage)) {
-            coverage = new ArrayList<>();
-        }
         coverage.add(brageCoverage);
     }
 
     /**
      * Add a single date.
+     *
      * @param brageDate A date.
      */
     public void addDate(BrageDate brageDate) {
-        if (isNull(dates)) {
-            dates = new ArrayList<>();
-        }
         dates.add(brageDate);
     }
 
     /**
      * Add a single identifier.
+     *
      * @param brageIdentifier An identifier.
      */
     public void addIdentifier(BrageIdentifier brageIdentifier) {
-        if (isNull(identifiers)) {
-            identifiers = new ArrayList<>();
-        }
         identifiers.add(brageIdentifier);
     }
 
     /**
      * Adds a single description.
+     *
      * @param brageDescription A description.
      */
     public void addDescription(BrageDescription brageDescription) {
-        if (isNull(descriptions)) {
-            descriptions = new ArrayList<>();
-        }
         descriptions.add(brageDescription);
     }
 
     /**
      * Adds a single creator.
+     *
      * @param brageCreator A creator.
      */
     public void addCreator(BrageCreator brageCreator) {
-        if (isNull(creators)) {
-            creators = new ArrayList<>();
-        }
         creators.add(brageCreator);
     }
 
     /**
      * Adds a single format.
+     *
      * @param brageFormat A format.
      */
     public void addFormat(BrageFormat brageFormat) {
-        if (isNull(formats)) {
-            formats = new ArrayList<>();
-        }
         formats.add(brageFormat);
     }
 
     /**
      * Adds a single language.
+     *
      * @param brageLanguage A language.
      */
     public void addLanguage(BrageLanguage brageLanguage) {
-        if (isNull(languages)) {
-            languages = new ArrayList<>();
-        }
         languages.add(brageLanguage);
     }
 
     /**
      * Adds a single provenance.
+     *
      * @param brageProvenance A provenance.
      */
     public void addProvenance(BrageProvenance brageProvenance) {
-        if (isNull(provenances)) {
-            provenances = new ArrayList<>();
-        }
         provenances.add(brageProvenance);
     }
 
     /**
      * Adds a single publisher.
+     *
      * @param bragePublisher A publisher.
      */
     public void addPublisher(BragePublisher bragePublisher) {
-        if (isNull(publishers)) {
-            publishers = new ArrayList<>();
-        }
         publishers.add(bragePublisher);
     }
 
     /**
      * Adds a single relation.
+     *
      * @param brageRelation A relation.
      */
     public void addRelation(BrageRelation brageRelation) {
-        if (isNull(relations)) {
-            relations = new ArrayList<>();
-        }
         relations.add(brageRelation);
     }
 
     /**
      * Adds a single rights.
+     *
      * @param brageRights A rights.
      */
     public void addRights(BrageRights brageRights) {
-        if (isNull(rights)) {
-            rights = new ArrayList<>();
-        }
         rights.add(brageRights);
     }
 
     /**
      * Adds a single source.
+     *
      * @param brageSource A source.
      */
     public void addSource(BrageSource brageSource) {
-        if (isNull(sources)) {
-            sources = new ArrayList<>();
-        }
         sources.add(brageSource);
     }
 
     /**
      * Adds a single subject.
+     *
      * @param brageSubject A subject.
      */
     public void addSubject(BrageSubject brageSubject) {
-        if (isNull(subjects)) {
-            subjects = new ArrayList<>();
-        }
         subjects.add(brageSubject);
     }
 
     /**
      * Adds a single title.
+     *
      * @param brageTitle A title.
      */
     public void addTitle(BrageTitle brageTitle) {
-        if (isNull(titles)) {
-            titles = new ArrayList<>();
-        }
         titles.add(brageTitle);
     }
 
     /**
      * Adds a single type.
+     *
      * @param brageType A type.
      */
     public void addType(BrageType brageType) {
-        if (isNull(types)) {
-            types = new ArrayList<>();
-        }
         types.add(brageType);
     }
 
@@ -310,25 +273,5 @@ public class BragePublication {
         return Objects.hash(getContributors(), getCoverage(), getDates(), getIdentifiers(), getDescriptions(),
                 getCreators(), getFormats(), getLanguages(), getProvenances(), getPublishers(), getRelations(),
                 getRights(), getSources(), getSubjects(), getTitles(), getTypes());
-    }
-
-    /**
-     * Produces an NVA publication representation of the Brage data.
-     * @return NVA Publication.
-     * @throws UnknownRoleMappingException If the Contributor cannot be mapped.
-     * @throws MalformedContributorException If the Contributor cannot be created.
-     */
-    public Publication asNvaPublication() throws UnknownRoleMappingException, MalformedContributorException {
-        var nvaContributors = new ArrayList<Contributor>();
-        for (BrageContributor contributor : contributors) {
-            nvaContributors.add(contributor.getNvaContributor());
-        }
-        var entityDescription = new EntityDescription.Builder()
-                .withContributors(nvaContributors)
-                .build();
-
-        return new Publication.Builder()
-                .withEntityDescription(entityDescription)
-                .build();
     }
 }

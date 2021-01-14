@@ -34,7 +34,7 @@ public enum SubjectType implements ElementType {
     NUS("nus"),
     OTHER("other"),
     REALFAGSTERMER("realfagstermer"),
-    UNQUALIFIED(null);
+    UNQUALIFIED("none");
 
     public static final String SUBJECT = "subject";
     private final String typeName;
@@ -44,13 +44,18 @@ public enum SubjectType implements ElementType {
     }
 
     @Override
-    public String getTypeName() {
-        return this.typeName;
+    public String getName() {
+        return SUBJECT;
     }
 
     @Override
-    public boolean isLanguageBased() {
-        return true;
+    public ElementType[] getValues() {
+        return values();
+    }
+
+    @Override
+    public String getQualifier() {
+        return this.typeName;
     }
 
     /**
@@ -59,15 +64,7 @@ public enum SubjectType implements ElementType {
      * @param candidate A string of a SubjectType.
      * @return A corresponding SubjectType
      */
-    public static SubjectType getTypeByName(String candidate) throws InvalidQualifierException {
-        return (SubjectType) ElementType.getTypeByName(SUBJECT, candidate, values(), UNQUALIFIED);
-    }
-
-    /**
-     * Generates a string representation of the allowed type values.
-     * @return A string representation of the allowed values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    public static SubjectType getTypeByName(String candidate, String value) throws InvalidQualifierException {
+        return (SubjectType) ElementType.getTypeByName(SUBJECT, candidate, values(), UNQUALIFIED, value);
     }
 }

@@ -3,30 +3,33 @@ package no.unit.nva.importbrage.metamodel.types;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 
 public enum RelationType implements ElementType {
-    HAS_PART("haspart", true),
-    IS_PART_OF("ispartof", true),
-    IS_PART_OF_SERIES("ispartofseries", false),
-    PROJECT("project", true),
-    URI("uri", false),
-    UNQUALIFIED(null, false);
+    HAS_PART("haspart"),
+    IS_PART_OF("ispartof"),
+    IS_PART_OF_SERIES("ispartofseries"),
+    PROJECT("project"),
+    URI("uri"),
+    UNQUALIFIED("none");
 
     public static final String RELATION = "relation";
     private final String typeName;
-    private final boolean languageBased;
 
-    RelationType(String typeName, boolean languageBased) {
+    RelationType(String typeName) {
         this.typeName = typeName;
-        this.languageBased = languageBased;
     }
 
     @Override
-    public String getTypeName() {
+    public String getName() {
+        return RELATION;
+    }
+
+    @Override
+    public ElementType[] getValues() {
+        return values();
+    }
+
+    @Override
+    public String getQualifier() {
         return typeName;
-    }
-
-    @Override
-    public boolean isLanguageBased() {
-        return this.languageBased;
     }
 
     /**
@@ -35,15 +38,7 @@ public enum RelationType implements ElementType {
      * @param candidate A string of a RelationType.
      * @return A corresponding RelationType
      */
-    public static RelationType getTypeByName(String candidate) throws InvalidQualifierException {
-        return (RelationType) ElementType.getTypeByName(RELATION, candidate, values(), UNQUALIFIED);
-    }
-
-    /**
-     * Generates a string representation of the allowed type values.
-     * @return A string representation of the allowed values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    public static RelationType getTypeByName(String candidate, String value) throws InvalidQualifierException {
+        return (RelationType) ElementType.getTypeByName(RELATION, candidate, values(), UNQUALIFIED, value);
     }
 }

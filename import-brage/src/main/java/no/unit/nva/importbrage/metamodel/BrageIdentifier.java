@@ -1,13 +1,26 @@
 package no.unit.nva.importbrage.metamodel;
 
-import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.brage.dublincore.DcValue;
+import no.unit.nva.importbrage.metamodel.exceptions.DoiException;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import no.unit.nva.importbrage.metamodel.types.IdentifierType;
 import nva.commons.utils.JacocoGenerated;
 
+import java.net.URI;
 import java.util.Objects;
 
+import static no.unit.nva.importbrage.metamodel.types.IdentifierType.ISBN;
+import static no.unit.nva.importbrage.metamodel.types.IdentifierType.ISSN;
+
 public class BrageIdentifier extends BrageLanguageValue {
+    public static final String HTTP_DOI_NAMESPACE = "http://doi.org/";
+    public static final String HTTPS_DOI_NAMESPACE = "https://doi.org/";
+    public static final String HTTP_DX_DOI_NAMESPACE = "http://dx.doi.org/";
+    public static final String HTTPS_DX_DOI_NAMESPACE = "https://dx.doi.org/";
+    public static final String RAW_DOI_PREFIX = "10";
+    private static final String DOI_IS_NOT_A_URN = "doi:";
+    private static final String DOI_DOC = "doc:";
+
     /*
 
         Generated from an XML element like:
@@ -43,12 +56,53 @@ public class BrageIdentifier extends BrageLanguageValue {
     }
 
     public BrageIdentifier(String identifierType, String value, String language) throws InvalidQualifierException {
-        this(IdentifierType.getTypeByName(identifierType), value, language);
+        this(IdentifierType.getTypeByName(identifierType, value), value, language);
+    }
+
+    public boolean isDoi() {
+        return identifierType.equals(IdentifierType.DOI);
+    }
+
+    public URI asDoi() throws DoiException {
+        var value = getValue();
+        if (value.startsWith(HTTP_DOI_NAMESPACE)) {
+            return createDoiUri(value.replace(HTTP_DOI_NAMESPACE, HTTPS_DOI_NAMESPACE));
+        } else if (value.startsWith(HTTP_DX_DOI_NAMESPACE)) {
+            return createDoiUri(value.replace(HTTP_DX_DOI_NAMESPACE, HTTPS_DOI_NAMESPACE));
+        } else if (value.startsWith(HTTPS_DX_DOI_NAMESPACE)) {
+            return createDoiUri(value.replace(HTTPS_DX_DOI_NAMESPACE, HTTPS_DOI_NAMESPACE));
+        } else if (value.startsWith(HTTPS_DOI_NAMESPACE)) {
+            return createDoiUri(value);
+        } else if (value.startsWith(DOI_IS_NOT_A_URN)) {
+            return createDoiUri(value.replace(DOI_IS_NOT_A_URN, HTTPS_DOI_NAMESPACE));
+        } else if (value.startsWith(DOI_DOC)) {
+            return createDoiUri(value.replace(DOI_DOC, HTTPS_DOI_NAMESPACE));
+        } else if (value.startsWith(RAW_DOI_PREFIX)) {
+            return createDoiUri(HTTPS_DOI_NAMESPACE + value);
+        } else {
+            throw new DoiException(value);
+        }
+    }
+
+    private URI createDoiUri(String value) {
+        return URI.create(value.trim());
     }
 
     public BrageIdentifier(IdentifierType identifierType, String value, String language) {
         super(value, language);
         this.identifierType = identifierType;
+    }
+
+    public boolean isIsbn() {
+        return ISBN.equals(identifierType);
+    }
+
+    public boolean isIssn() {
+        return ISSN.equals(identifierType);
+    }
+
+    public boolean isUri() {
+        return IdentifierType.URI.equals(identifierType);
     }
 
     public IdentifierType getIdentifierType() {

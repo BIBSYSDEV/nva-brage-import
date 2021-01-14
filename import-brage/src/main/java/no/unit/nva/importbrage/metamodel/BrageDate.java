@@ -1,6 +1,6 @@
 package no.unit.nva.importbrage.metamodel;
 
-import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.brage.dublincore.DcValue;
 import no.unit.nva.importbrage.metamodel.exceptions.IllegalDateConversionException;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidPublicationDateException;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
@@ -51,12 +51,16 @@ public class BrageDate extends BrageValue {
     }
 
     public BrageDate(String dateType, String value) throws InvalidQualifierException {
-        this(DateType.getTypeByName(dateType), value);
+        this(DateType.getTypeByName(dateType, value), value);
     }
 
     public BrageDate(DateType dateType, String value) {
         super(value);
         this.dateType = dateType;
+    }
+
+    public boolean isSubmittedDate() {
+        return dateType.equals(DateType.SUBMITTED);
     }
 
     public DateType getDateType() {
@@ -92,6 +96,10 @@ public class BrageDate extends BrageValue {
             throw new IllegalDateConversionException(getValue(), dateType);
         }
         return convertToPublicationDate();
+    }
+
+    public boolean isIssuedDate() {
+        return DateType.ISSUED.equals(dateType);
     }
 
     private PublicationDate convertToPublicationDate() throws InvalidPublicationDateException {

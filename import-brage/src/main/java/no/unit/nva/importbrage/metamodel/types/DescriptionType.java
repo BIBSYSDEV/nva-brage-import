@@ -11,7 +11,7 @@ public enum DescriptionType implements ElementType {
     SPONSORSHIP("sponsorship"),
     TABLEOFCONTENTS("tableofcontents"),
     VERSION("version"),
-    UNQUALIFIED(null);
+    UNQUALIFIED("none");
 
     public static final String DESCRIPTION = "description";
     private final String typeName;
@@ -21,13 +21,18 @@ public enum DescriptionType implements ElementType {
     }
 
     @Override
-    public String getTypeName() {
-        return typeName;
+    public String getName() {
+        return DESCRIPTION;
     }
 
     @Override
-    public boolean isLanguageBased() {
-        return true;
+    public ElementType[] getValues() {
+        return values();
+    }
+
+    @Override
+    public String getQualifier() {
+        return typeName;
     }
 
     /**
@@ -36,16 +41,8 @@ public enum DescriptionType implements ElementType {
      * @param candidate A string of a DescriptionType.
      * @return A corresponding DescriptionType
      */
-    public static DescriptionType getTypeByName(String candidate) throws InvalidQualifierException {
-        return (DescriptionType) ElementType.getTypeByName(DESCRIPTION, candidate, values(), UNQUALIFIED);
-    }
-
-    /**
-     * Generates a string representation of the allowed type values.
-     * @return A string representation of the allowed values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    public static DescriptionType getTypeByName(String candidate, String value) throws InvalidQualifierException {
+        return (DescriptionType) ElementType.getTypeByName(DESCRIPTION, candidate, values(), UNQUALIFIED, value);
     }
 }
                            

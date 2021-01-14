@@ -4,7 +4,7 @@ import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 
 public enum LanguageType implements ElementType {
     ISO("iso"),
-    UNQUALIFIED(null);
+    UNQUALIFIED("none");
 
     private final String typeName;
     public static final String LANGUAGE = "language";
@@ -14,13 +14,18 @@ public enum LanguageType implements ElementType {
     }
 
     @Override
-    public String getTypeName() {
-        return typeName;
+    public String getName() {
+        return LANGUAGE;
     }
 
     @Override
-    public boolean isLanguageBased() {
-        return true;
+    public ElementType[] getValues() {
+        return values();
+    }
+
+    @Override
+    public String getQualifier() {
+        return typeName;
     }
 
     /**
@@ -29,15 +34,7 @@ public enum LanguageType implements ElementType {
      * @param candidate A string of a LanguageType.
      * @return A corresponding LanguageType
      */
-    public static LanguageType getTypeByName(String candidate) throws InvalidQualifierException {
-        return (LanguageType) ElementType.getTypeByName(LANGUAGE, candidate, values(), UNQUALIFIED);
-    }
-
-    /**
-     * Generates a string representation of the allowed type values.
-     * @return A string representation of the allowed values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    public static LanguageType getTypeByName(String candidate, String value) throws InvalidQualifierException {
+        return (LanguageType) ElementType.getTypeByName(LANGUAGE, candidate, values(), UNQUALIFIED, value);
     }
 }

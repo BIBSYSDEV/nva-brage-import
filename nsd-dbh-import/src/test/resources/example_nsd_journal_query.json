@@ -1,0 +1,14 @@
+{"tabell_id":851,"api_versjon":1,"statuslinje":"N","begrensning":"10000","kodetekst":"N","desimal_separator":".",
+  "variabler":["*"],
+  "sortBy":[],
+  "filter":[
+    {
+      "variabel": "Aktiv",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "0", "1", "2", "3", "4", "5"
+        ]
+      }
+    }
+  ]}

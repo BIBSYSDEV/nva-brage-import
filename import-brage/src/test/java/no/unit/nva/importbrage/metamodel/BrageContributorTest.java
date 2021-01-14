@@ -42,7 +42,7 @@ class BrageContributorTest {
     void getNvaContributorThrowsUnknownRoleMappingExceptionWhenInputMappingIsUnknown(ContributorType contributorType) {
         Executable executable = () -> new BrageContributor(contributorType, ANY_NAME).getNvaContributor();
         var actual = assertThrows(UnknownRoleMappingException.class, executable);
-        String expected = String.format(MESSAGE_TEMPLATE, contributorType.getTypeName());
+        String expected = String.format(MESSAGE_TEMPLATE, contributorType.getQualifier(), ANY_NAME);
         assertThat(actual.getMessage(), equalTo(expected));
     }
 
@@ -70,7 +70,6 @@ class BrageContributorTest {
     private static Stream<Arguments> unknownContributorMappingPairs() {
         return Stream.of(
                 Arguments.of(ContributorType.DEPARTMENT),
-                Arguments.of(ContributorType.ORCID),
                 Arguments.of(ContributorType.OTHER)
         );
     }

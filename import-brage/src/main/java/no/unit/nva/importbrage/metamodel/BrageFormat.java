@@ -1,11 +1,13 @@
 package no.unit.nva.importbrage.metamodel;
 
-import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.brage.dublincore.DcValue;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import no.unit.nva.importbrage.metamodel.types.FormatType;
 import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
+
+import static no.unit.nva.importbrage.metamodel.types.FormatType.EXTENT;
 
 public class BrageFormat extends BrageValue {
     private final FormatType formatType;
@@ -15,12 +17,16 @@ public class BrageFormat extends BrageValue {
     }
 
     public BrageFormat(String formatType, String value) throws InvalidQualifierException {
-        this(FormatType.getTypeByTypeName(formatType), value);
+        this(FormatType.getTypeByTypeName(formatType, value), value);
     }
 
     public BrageFormat(FormatType formatType, String value) {
         super(value);
         this.formatType = formatType;
+    }
+
+    public boolean isExtent() {
+        return EXTENT.equals(formatType);
     }
 
     public FormatType getFormatType() {

@@ -1,6 +1,6 @@
 package no.unit.nva.importbrage.metamodel;
 
-import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.brage.dublincore.DcValue;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import no.unit.nva.importbrage.metamodel.exceptions.UnknownRoleMappingException;
 import no.unit.nva.importbrage.metamodel.types.ContributorType;
@@ -11,6 +11,9 @@ import no.unit.nva.model.exceptions.MalformedContributorException;
 import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
+
+import static no.unit.nva.importbrage.metamodel.types.ContributorType.EDITOR;
+import static no.unit.nva.importbrage.metamodel.types.ContributorType.ORCID;
 
 public class BrageContributor extends BrageValue {
     /*
@@ -38,12 +41,20 @@ public class BrageContributor extends BrageValue {
     }
 
     public BrageContributor(String qualifier, String value) throws InvalidQualifierException {
-        this(ContributorType.getTypeByName(qualifier), value);
+        this(ContributorType.getTypeByName(qualifier, value), value);
     }
 
     public BrageContributor(ContributorType contributorType, String value) {
         super(value);
         this.contributorType = contributorType;
+    }
+
+    public boolean isEditor() {
+        return EDITOR.equals(contributorType);
+    }
+
+    public boolean isOrcid() {
+        return ORCID.equals(contributorType);
     }
 
     public ContributorType getContributorType() {
@@ -63,7 +74,7 @@ public class BrageContributor extends BrageValue {
                 .build();
         return new Contributor.Builder()
                 .withIdentity(identity)
-                .withRole(contributorType.getNvaMapping())
+                .withRole(contributorType.getNvaMapping(getValue()))
                 .build();
     }
 

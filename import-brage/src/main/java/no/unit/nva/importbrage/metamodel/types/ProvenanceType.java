@@ -3,7 +3,7 @@ package no.unit.nva.importbrage.metamodel.types;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 
 public enum ProvenanceType implements ElementType {
-    UNQUALIFIED(null);
+    UNQUALIFIED("none");
 
     public static final String PROVENANCE = "provenance";
     private final String typeName;
@@ -13,13 +13,18 @@ public enum ProvenanceType implements ElementType {
     }
 
     @Override
-    public String getTypeName() {
-        return typeName;
+    public String getName() {
+        return PROVENANCE;
     }
 
     @Override
-    public boolean isLanguageBased() {
-        return true;
+    public ElementType[] getValues() {
+        return values();
+    }
+
+    @Override
+    public String getQualifier() {
+        return typeName;
     }
 
     /**
@@ -28,15 +33,7 @@ public enum ProvenanceType implements ElementType {
      * @param candidate A string of a ProvenanceType.
      * @return A corresponding ProvenanceType
      */
-    public static ProvenanceType getTypeByName(String candidate) throws InvalidQualifierException {
-        return (ProvenanceType) ElementType.getTypeByName(PROVENANCE, candidate, values(), UNQUALIFIED);
-    }
-
-    /**
-     * Generates a string representation of the allowed type values.
-     * @return A string representation of the allowed values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    public static ProvenanceType getTypeByName(String candidate, String value) throws InvalidQualifierException {
+        return (ProvenanceType) ElementType.getTypeByName(PROVENANCE, candidate, values(), UNQUALIFIED, value);
     }
 }

@@ -3,28 +3,31 @@ package no.unit.nva.importbrage.metamodel.types;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 
 public enum RightsType implements ElementType {
-    HOLDER("holder", true),
-    LICENSE("license", true),
-    URI("uri", false),
-    UNQUALIFIED(null, true);
+    HOLDER("holder"),
+    LICENSE("license"),
+    URI("uri"),
+    UNQUALIFIED("none");
 
     public static final String RIGHTS = "rights";
     private final String typeName;
-    private final boolean languageBased;
 
-    RightsType(String typeName, boolean languageBased) {
+    RightsType(String typeName) {
         this.typeName = typeName;
-        this.languageBased = languageBased;
     }
 
     @Override
-    public String getTypeName() {
+    public String getName() {
+        return RIGHTS;
+    }
+
+    @Override
+    public ElementType[] getValues() {
+        return values();
+    }
+
+    @Override
+    public String getQualifier() {
         return typeName;
-    }
-
-    @Override
-    public boolean isLanguageBased() {
-        return this.languageBased;
     }
 
     /**
@@ -33,15 +36,7 @@ public enum RightsType implements ElementType {
      * @param candidate A string of a RightsType.
      * @return A corresponding RightsType
      */
-    public static RightsType getTypeByName(String candidate) throws InvalidQualifierException {
-        return (RightsType) ElementType.getTypeByName(RIGHTS, candidate, values(), UNQUALIFIED);
-    }
-
-    /**
-     * Generates a string representation of the allowed type values.
-     * @return A string representation of the allowed values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    public static RightsType getTypeByName(String candidate, String value) throws InvalidQualifierException {
+        return (RightsType) ElementType.getTypeByName(RIGHTS, candidate, values(), UNQUALIFIED, value);
     }
 }

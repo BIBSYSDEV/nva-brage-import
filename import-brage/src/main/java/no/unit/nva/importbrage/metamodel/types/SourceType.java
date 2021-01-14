@@ -9,7 +9,7 @@ public enum SourceType implements ElementType {
     PAGE_NUMBER("pagenumber"),
     URI("uri"),
     VOLUME("volume"),
-    UNQUALIFIED(null);
+    UNQUALIFIED("none");
 
     public static final String SOURCE = "source";
     private final String typeName;
@@ -19,14 +19,20 @@ public enum SourceType implements ElementType {
     }
 
     @Override
-    public String getTypeName() {
-        return typeName;
+    public String getName() {
+        return SOURCE;
     }
 
     @Override
-    public boolean isLanguageBased() {
-        return true;
+    public ElementType[] getValues() {
+        return values();
     }
+
+    @Override
+    public String getQualifier() {
+        return typeName;
+    }
+
 
     /**
      * Get the equivalent SourceType by its string representation.
@@ -34,15 +40,7 @@ public enum SourceType implements ElementType {
      * @param candidate A string of a SourceType.
      * @return A corresponding SourceType
      */
-    public static SourceType getTypeByName(String candidate) throws InvalidQualifierException {
-        return (SourceType) ElementType.getTypeByName(SOURCE, candidate, values(), UNQUALIFIED);
-    }
-
-    /**
-     * Generates a string representation of the allowed type values.
-     * @return A string representation of the allowed values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    public static SourceType getTypeByName(String candidate, String value) throws InvalidQualifierException {
+        return (SourceType) ElementType.getTypeByName(SOURCE, candidate, values(), UNQUALIFIED, value);
     }
 }

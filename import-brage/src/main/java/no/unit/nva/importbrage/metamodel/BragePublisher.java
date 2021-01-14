@@ -1,6 +1,6 @@
 package no.unit.nva.importbrage.metamodel;
 
-import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.brage.dublincore.DcValue;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import no.unit.nva.importbrage.metamodel.types.PublisherType;
 import nva.commons.utils.JacocoGenerated;
@@ -15,7 +15,7 @@ public class BragePublisher extends BrageLanguageValue {
     }
 
     public BragePublisher(String qualifier, String value, String language) throws InvalidQualifierException {
-        this(PublisherType.getTypeByName(qualifier), value, language);
+        this(PublisherType.getTypeByName(qualifier, value), value, language);
     }
 
     public BragePublisher(PublisherType publisherType, String value, String language) {

@@ -15,7 +15,7 @@ public enum DateType implements ElementType {
     ISSUED("issued", STRING),
     SUBMITTED("submitted", STRING), // only on theses
     SWORD_UPDATED("updated", DISCARD_VALUE),
-    UNQUALIFIED(null, STRING);
+    UNQUALIFIED("none", STRING);
 
     public static final String DATE = "date";
     private final String type;
@@ -27,13 +27,18 @@ public enum DateType implements ElementType {
     }
 
     @Override
-    public String getTypeName() {
-        return type;
+    public String getName() {
+        return DATE;
     }
 
     @Override
-    public boolean isLanguageBased() {
-        return false;
+    public ElementType[] getValues() {
+        return values();
+    }
+
+    @Override
+    public String getQualifier() {
+        return type;
     }
 
     public DateValueType getValueType() {
@@ -46,16 +51,8 @@ public enum DateType implements ElementType {
      * @param candidate A string of a DateType.
      * @return A corresponding DateType
      */
-    public static DateType getTypeByName(String candidate) throws InvalidQualifierException {
-        return (DateType) ElementType.getTypeByName(DATE, candidate, values(), UNQUALIFIED);
-    }
-
-    /**
-     * Generates a string representation of the allowed type values.
-     * @return A string representation of the allowed values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    public static DateType getTypeByName(String candidate, String value) throws InvalidQualifierException {
+        return (DateType) ElementType.getTypeByName(DATE, candidate, values(), UNQUALIFIED, value);
     }
 
     public enum DateValueType {

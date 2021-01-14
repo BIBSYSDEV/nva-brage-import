@@ -1,6 +1,6 @@
 package no.unit.nva.importbrage.metamodel;
 
-import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.brage.dublincore.DcValue;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import no.unit.nva.importbrage.metamodel.types.RightsType;
 import nva.commons.utils.JacocoGenerated;
@@ -15,7 +15,7 @@ public class BrageRights extends BrageLanguageValue {
     }
 
     public BrageRights(String rightsType, String value, String language) throws InvalidQualifierException {
-        this(RightsType.getTypeByName(rightsType), value, language);
+        this(RightsType.getTypeByName(rightsType, value), value, language);
     }
 
     public BrageRights(RightsType rightsType, String value, String language) {

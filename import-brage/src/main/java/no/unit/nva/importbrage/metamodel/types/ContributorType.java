@@ -3,8 +3,12 @@ package no.unit.nva.importbrage.metamodel.types;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import no.unit.nva.importbrage.metamodel.exceptions.UnknownRoleMappingException;
 import no.unit.nva.model.Role;
+import nva.commons.utils.SingletonCollector;
+
+import java.util.Arrays;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 public enum ContributorType implements ElementType {
     ADVISOR("advisor", Role.ADVISOR),
@@ -14,7 +18,7 @@ public enum ContributorType implements ElementType {
     ILLUSTRATOR("illustrator", Role.ILLUSTRATOR),
     ORCID("orcid", null),
     OTHER("other", null),
-    UNQUALIFIED(null, Role.CREATOR);
+    UNQUALIFIED("none", Role.CREATOR);
 
     public static final String CONTRIBUTOR = "contributor";
     private final String typeName;
@@ -25,14 +29,34 @@ public enum ContributorType implements ElementType {
         this.role = role;
     }
 
-    @Override
-    public String getTypeName() {
-        return typeName;
+    public static ContributorType getTypeByRole(Role role) {
+        if (Role.CREATOR.equals(role)) {
+            return AUTHOR;
+        }
+
+        return Arrays.stream(values())
+                .filter(ContributorType::isNullMapping)
+                .filter(mapping -> mapping.role.equals(role))
+                .collect(SingletonCollector.collectOrElse(null));
+    }
+
+    private static boolean isNullMapping(ContributorType contributorType) {
+        return nonNull(contributorType.role);
     }
 
     @Override
-    public boolean isLanguageBased() {
-        return false;
+    public String getName() {
+        return CONTRIBUTOR;
+    }
+
+    @Override
+    public ElementType[] getValues() {
+        return values();
+    }
+
+    @Override
+    public String getQualifier() {
+        return typeName;
     }
 
     /**
@@ -41,16 +65,8 @@ public enum ContributorType implements ElementType {
      * @param candidate A string of a ContributorType.
      * @return A corresponding ContributorType
      */
-    public static ContributorType getTypeByName(String candidate) throws InvalidQualifierException {
-        return (ContributorType) ElementType.getTypeByName(CONTRIBUTOR, candidate, values(), UNQUALIFIED);
-    }
-
-    /**
-     * Generates a string representation of the allowed type values.
-     * @return A string representation of the allowed values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    public static ContributorType getTypeByName(String candidate, String value) throws InvalidQualifierException {
+        return (ContributorType) ElementType.getTypeByName(CONTRIBUTOR, candidate, values(), UNQUALIFIED, value);
     }
 
     /**
@@ -58,9 +74,9 @@ public enum ContributorType implements ElementType {
      * @return NVA Role.
      * @throws UnknownRoleMappingException If the mapping is unknown.
      */
-    public Role getNvaMapping() throws UnknownRoleMappingException {
-        if (isNull(role)) {
-            throw new UnknownRoleMappingException(typeName);
+    public Role getNvaMapping(String value) throws UnknownRoleMappingException {
+        if (!ORCID.getQualifier().equals(typeName) && isNull(role)) {
+            throw new UnknownRoleMappingException(typeName, value);
         }
         return role;
     }

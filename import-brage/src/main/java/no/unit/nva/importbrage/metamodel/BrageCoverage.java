@@ -1,6 +1,6 @@
 package no.unit.nva.importbrage.metamodel;
 
-import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.brage.dublincore.DcValue;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import no.unit.nva.importbrage.metamodel.types.CoverageType;
 import nva.commons.utils.JacocoGenerated;
@@ -22,7 +22,7 @@ public class BrageCoverage extends BrageLanguageValue {
     private final CoverageType type;
 
     public BrageCoverage(String type, String value, String language) throws InvalidQualifierException {
-        this(CoverageType.getTypeByName(type), value, language);
+        this(CoverageType.getTypeByName(type, value), value, language);
     }
 
     public BrageCoverage(CoverageType type, String value, String language) {

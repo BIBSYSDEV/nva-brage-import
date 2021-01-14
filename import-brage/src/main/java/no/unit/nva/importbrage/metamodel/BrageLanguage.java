@@ -1,6 +1,6 @@
 package no.unit.nva.importbrage.metamodel;
 
-import no.unit.nva.importbrage.DcValue;
+import no.unit.nva.brage.dublincore.DcValue;
 import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
 import no.unit.nva.importbrage.metamodel.types.LanguageType;
 import nva.commons.utils.JacocoGenerated;
@@ -15,7 +15,7 @@ public class BrageLanguage extends BrageLanguageValue {
     }
 
     public BrageLanguage(String languageType, String value, String language) throws InvalidQualifierException {
-        this(LanguageType.getTypeByName(languageType), value, language);
+        this(LanguageType.getTypeByName(languageType, value), value, language);
     }
 
     public BrageLanguage(LanguageType languageType, String value, String language) {

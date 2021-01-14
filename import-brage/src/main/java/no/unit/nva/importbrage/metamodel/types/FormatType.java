@@ -6,7 +6,7 @@ public enum FormatType implements ElementType {
     EXTENT("extent"),
     MEDIUM("medium"),
     MIMETYPE("mimetype"),
-    UNQUALIFIED(null);
+    UNQUALIFIED("none");
 
     public static final String FORMAT = "format";
     private final String typeName;
@@ -15,22 +15,19 @@ public enum FormatType implements ElementType {
         this.typeName = typeName;
     }
 
-    /**
-     * Returns a comma-separated string representation of possible values.
-     * @return A string representation of possible values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    @Override
+    public String getName() {
+        return FORMAT;
     }
 
     @Override
-    public String getTypeName() {
+    public ElementType[] getValues() {
+        return values();
+    }
+
+    @Override
+    public String getQualifier() {
         return typeName;
-    }
-
-    @Override
-    public boolean isLanguageBased() {
-        return false;
     }
 
     /**
@@ -39,7 +36,7 @@ public enum FormatType implements ElementType {
      * @param candidate A string of a FormatType.
      * @return A corresponding FormatType
      */
-    public static FormatType getTypeByTypeName(String candidate) throws InvalidQualifierException {
-        return (FormatType) ElementType.getTypeByName(FORMAT, candidate, values(), UNQUALIFIED);
+    public static FormatType getTypeByTypeName(String candidate, String value) throws InvalidQualifierException {
+        return (FormatType) ElementType.getTypeByName(FORMAT, candidate, values(), UNQUALIFIED, value);
     }
 }

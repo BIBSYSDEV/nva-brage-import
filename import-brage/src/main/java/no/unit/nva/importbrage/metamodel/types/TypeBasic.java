@@ -6,7 +6,7 @@ import no.unit.nva.importbrage.metamodel.exceptions.InvalidQualifierException;
      dc.type    Nature or genre of content.
  */
 public enum TypeBasic implements ElementType {
-    UNQUALIFIED(null);
+    UNQUALIFIED("none");
 
     public static final String TYPE = "type";
     private final String typeName;
@@ -16,13 +16,18 @@ public enum TypeBasic implements ElementType {
     }
 
     @Override
-    public String getTypeName() {
-        return typeName;
+    public String getName() {
+        return TYPE;
     }
 
     @Override
-    public boolean isLanguageBased() {
-        return true;
+    public ElementType[] getValues() {
+        return values();
+    }
+
+    @Override
+    public String getQualifier() {
+        return typeName;
     }
 
     /**
@@ -31,15 +36,7 @@ public enum TypeBasic implements ElementType {
      * @param candidate A string of a TypeBasic.
      * @return A corresponding TypeBasic
      */
-    public static TypeBasic getTypeByName(String candidate) throws InvalidQualifierException {
-        return (TypeBasic) ElementType.getTypeByName(TYPE, candidate, values(), UNQUALIFIED);
-    }
-
-    /**
-     * Generates a string representation of the allowed type values.
-     * @return A string representation of the allowed values.
-     */
-    public static String getAllowedValues() {
-        return ElementType.getAllowedValues(values());
+    public static TypeBasic getTypeByName(String candidate, String value) throws InvalidQualifierException {
+        return (TypeBasic) ElementType.getTypeByName(TYPE, candidate, values(), UNQUALIFIED, value);
     }
 }
