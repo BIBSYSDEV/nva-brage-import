@@ -128,7 +128,7 @@ public class TestCli {
 
     @Test
     void importCliProducesXExpectedOutputFromValidDublinCore() throws URISyntaxException {
-        var filename = "three";
+        var filename = "four";
         var inputFileArg = getFileArgumentFromResources(filename);
         var outputDirectoryArg = getOutputOptionForExistingDirectory();
         var ownerArg = "--owner=does@not.matter";
@@ -152,6 +152,7 @@ public class TestCli {
         comparePublication(new PathPublicationPair(outputArg.replace(OUTPUT_PREFIX, "") + "/1/1/dublin_core.xml", testPair.getNvaPublication()));
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private String generateInput(TestPair testPair) {
         var inputDirectory = new File(temporaryInputDirectory.getAbsolutePath(), "1/1");
         inputDirectory.mkdirs();

@@ -33,7 +33,8 @@ class JournalParserTest {
     public static final String SAMFUNNSVITENSKAP = "Samfunnsvitenskap";
     public static final String UTVIKLINGSSTUDIER = "Utviklingsstudier";
     public static final String EXPECTED_TITLE = "Journal of Contemporary Asia";
-    public static final String EXPECTED_URL = "https://www.tandfonline.com/toc/rjoc20/current";
+    public static final String EXPECTED_URL
+            = "https://dbh.nsd.uib.no/publiseringskanaler/KanalTidsskriftInfo.action?id=339711&bibsys=false";
     public static final String NOT_AN_ISSN = "nonsense";
     public static final String TWENTY_TWENTY = "2020";
     public static final String TWENTY_NINETEEN = "2019";

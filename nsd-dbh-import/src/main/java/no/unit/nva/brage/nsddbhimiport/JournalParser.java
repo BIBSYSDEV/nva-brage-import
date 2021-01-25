@@ -39,6 +39,7 @@ public class JournalParser {
     public static final String LEVEL_ERROR = "Could not generate level list for publication channel";
     public static final String ERROR_PARSING_FILE = "Cannot parse CSV for publishing channels";
     public static final String MISSING_FILE_ERROR = "The Journal Data file is missing";
+    public static final String JOURNAL_ID = "Tidsskrift id";
     private final List<PublisherInfo> journals = new ArrayList<>();
 
     public JournalParser() {
@@ -76,7 +77,7 @@ public class JournalParser {
                 String npiSubject = record.get(NPI_SUBJECT);
                 String country = record.get(COUNTRY);
                 String language = record.get(LANGUAGE);
-                String uri = record.get(URL);
+                String uri = String.format("https://dbh.nsd.uib.no/publiseringskanaler/KanalTidsskriftInfo.action?id=%s&bibsys=false", record.get(JOURNAL_ID)); // Likely not what we want
 
                 var level = new HashMap<String, Level>();
 

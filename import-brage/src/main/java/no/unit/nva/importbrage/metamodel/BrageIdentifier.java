@@ -20,6 +20,8 @@ public class BrageIdentifier extends BrageLanguageValue {
     public static final String RAW_DOI_PREFIX = "10";
     private static final String DOI_IS_NOT_A_URN = "doi:";
     private static final String DOI_DOC = "doc:";
+    public static final String EMTPY_STRING = "";
+    public static final String WHITESPACE = " ";
 
     /*
 
@@ -64,7 +66,7 @@ public class BrageIdentifier extends BrageLanguageValue {
     }
 
     public URI asDoi() throws DoiException {
-        var value = getValue();
+        var value = getValue().replace(WHITESPACE, EMTPY_STRING);
         if (value.startsWith(HTTP_DOI_NAMESPACE)) {
             return createDoiUri(value.replace(HTTP_DOI_NAMESPACE, HTTPS_DOI_NAMESPACE));
         } else if (value.startsWith(HTTP_DX_DOI_NAMESPACE)) {
@@ -85,7 +87,7 @@ public class BrageIdentifier extends BrageLanguageValue {
     }
 
     private URI createDoiUri(String value) {
-        return URI.create(value.trim());
+        return URI.create(value);
     }
 
     public BrageIdentifier(IdentifierType identifierType, String value, String language) {

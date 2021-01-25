@@ -44,6 +44,7 @@ public class ImportCli implements Callable<Integer> {
     @CommandLine.Spec
     protected transient CommandLine.Model.CommandSpec commandSpec;
     private final List<Error> errorReport = new ArrayList<>();
+    private int totalFiles;
 
     @SuppressWarnings("PMD.DoNotCallSystemExit")
     @JacocoGenerated
@@ -84,7 +85,8 @@ public class ImportCli implements Callable<Integer> {
             commandSpec.commandLine().getErr().printf("Structure of directory \"%s\" was not as expected", input);
             return 1;
         } else {
-            commandSpec.commandLine().getOut().printf("Parsing " + secondLevel.size() + " files");
+            totalFiles = secondLevel.size();
+            commandSpec.commandLine().getOut().printf("Parsing " + totalFiles + " files");
         }
         var start = Instant.now();
         for (File file : secondLevel) {
@@ -97,7 +99,7 @@ public class ImportCli implements Callable<Integer> {
                     return outputCode;
                 }
             } catch (IOException e) {
-                errorReport.add(new Error(null, List.of(String.format("Could not read file: %s", file.getAbsolutePath()))));
+                errorReport.add(new Error(null, null, List.of(String.format("Could not read file: %s", file.getAbsolutePath()))));
             }
         }
         var end = Instant.now();
@@ -145,7 +147,7 @@ public class ImportCli implements Callable<Integer> {
         if (mapping.isSuccess()) {
             return updatePublication(mapping.getPublication());}
         else {
-            errorReport.add(new Error(mapping.getBrageUri(), new ArrayList<>(mapping.getErrors())));
+            errorReport.add(new Error(mapping.getBrageUri(), file, new ArrayList<>(mapping.getErrors())));
             return null;
         }
     }
@@ -178,9 +180,25 @@ public class ImportCli implements Callable<Integer> {
 
     private String formatErrorReport() {
         var references = errorReport.stream()
-                .map(value -> "<a href=\"" + value.getUri() + "\">" + value.getUri() + "</a><br>\n" + value.getHtmlFormattedError() + "<br>\n")
+                .map(this::formatHtmlOutput)
                 .collect(Collectors.joining());
-        return "<html><body><b>There were " + errorReport.size() + " errors</><br>" + references + "</body></html>";
+        return "<html><body><b>Parsed " + totalFiles + "</b><br><b>There were " + errorReport.size() + " errors</><br>" + references + "</body></html>";
+    }
+
+    private String formatHtmlOutput(Error value) {
+        return "<a href=\"" + value.getHandle() + "\">Brage document</a> | <a href=\""
+                + getInput(value.getInputFile()) + "\">Input</a> | <a href=\""
+                + getOutput(value.getInputFile()) + "\">Output</a><br>\n"
+                + value.getHtmlFormattedError() + "<br>\n";
+    }
+
+    private String getOutput(File inputFile) {
+
+        return inputFile.getAbsolutePath().replace(inputFile.getParentFile().getParentFile().getParent(), ".");
+    }
+
+    private String getInput(File inputFile) {
+        return inputFile.getAbsolutePath().replace(inputFile.getParentFile().getParentFile().getParent(), "../" + input.getName());
     }
 
     private File createParentOutputDirectories(File outputFile) {

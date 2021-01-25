@@ -4,6 +4,8 @@ import nva.commons.utils.JacocoGenerated;
 
 import java.util.Objects;
 
+import static java.util.Objects.nonNull;
+
 public class BrageValue {
     private final String value;
 
@@ -12,7 +14,7 @@ public class BrageValue {
     }
 
     public String getValue() {
-        return value;
+        return nonNull(value) ? value.trim() : null;
     }
 
     @JacocoGenerated

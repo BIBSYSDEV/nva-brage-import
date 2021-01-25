@@ -28,6 +28,7 @@ import no.unit.nva.importbrage.metamodel.exceptions.IssuedDateException;
 import no.unit.nva.importbrage.metamodel.exceptions.JournalIssueException;
 import no.unit.nva.importbrage.metamodel.exceptions.JournalVolumeException;
 import no.unit.nva.importbrage.metamodel.exceptions.LanguageException;
+import no.unit.nva.importbrage.metamodel.exceptions.MissingJournalContextException;
 import no.unit.nva.importbrage.metamodel.exceptions.PageRangeException;
 import no.unit.nva.importbrage.metamodel.exceptions.PagesException;
 import no.unit.nva.importbrage.metamodel.exceptions.PublisherException;
@@ -110,6 +111,7 @@ public class BragePublicationConverter {
             + "the mapping filter";
     public static final String ISBN = "ISBN";
     public static final String EMPTY_STRING = "";
+    public static final String WHITESPACE = "";
     private final JournalParser journalParser;
 
     public static final String ORCID_FAILED_MESSAGE = "Processing ORCID on contributor \"%s\" failed";
@@ -137,16 +139,21 @@ public class BragePublicationConverter {
     }
 
     private Publication asNvaPublication() {
-        var entityDescription = new EntityDescription.Builder()
-                .withAlternativeTitles(extractAlternativeTitles())
-                .withContributors(extractContributors())
-                .withDescription(extractDescription())
-                .withAbstract(extractAbstract())
-                .withLanguage(extractLanguage())
-                .withDate(extractPublicationDate())
-                .withMainTitle(extractMainTitle())
-                .withReference(extractReference())
-                .build();
+        EntityDescription entityDescription = null;
+        try {
+            entityDescription = new EntityDescription.Builder()
+                    .withAlternativeTitles(extractAlternativeTitles())
+                    .withContributors(extractContributors())
+                    .withDescription(extractDescription())
+                    .withAbstract(extractAbstract())
+                    .withLanguage(extractLanguage())
+                    .withDate(extractPublicationDate())
+                    .withMainTitle(extractMainTitle())
+                    .withReference(extractReference())
+                    .build();
+        } catch (TitleException e) {
+            failures.add(e);
+        }
 
         return failures.isEmpty()
                 ? new Publication.Builder()
@@ -170,17 +177,13 @@ public class BragePublicationConverter {
         return Map.of(detectedLanguage, value);
     }
 
-    private String extractMainTitle() {
+    private String extractMainTitle() throws TitleException {
         var titles = bragePublication.getTitles();
-        try {
             return titles.stream()
                     .filter(BrageTitle::isMainTitle)
                     .map(BrageTitle::getValue)
-                    .collect(SingletonCollector.collect());
-        } catch (IllegalStateException exception) {
-            failures.add(new TitleException(titles));
-            return null;
-        }
+                    .collect(SingletonCollector.tryCollect())
+                    .orElseThrow(failure -> new TitleException(titles));
     }
 
     private PublicationDate extractPublicationDate() {
@@ -331,7 +334,7 @@ public class BragePublicationConverter {
             IncorrectlyFormattedSeriesInformationException, MalformedURLException, IdentifierUrlException,
             PublisherException, PagesException, InvalidPublicationDateException, SubmittedDateException,
             IllegalDateConversionException, PageRangeException, JournalVolumeException, JournalIssueException,
-            ArticleNumberException, IssuedDateException, InvalidPublicationContextException {
+            ArticleNumberException, IssuedDateException, InvalidPublicationContextException, MissingJournalContextException {
         if (TypeValue.ARTISTIC_PRODUCTION.equals(typeValue)) {
             throw new UnknownTypeMappingException(typeValue.getTypeName());
         } else if (TypeValue.BACHELOR_THESIS.equals(typeValue)) {
@@ -382,7 +385,7 @@ public class BragePublicationConverter {
     }
 
     private Reference generateFeatureArticle() throws ArticleNumberException, PageRangeException, JournalIssueException,
-            InvalidIssnException, AmbiguousDoiException, JournalVolumeException, MalformedURLException, InvalidPublicationContextException {
+            InvalidIssnException, AmbiguousDoiException, JournalVolumeException, MalformedURLException, InvalidPublicationContextException, MissingJournalContextException {
         var instance = new FeatureArticle.Builder()
                 .withArticleNumber(extractArticleNumber())
                 .withPages(extractRange())
@@ -542,7 +545,7 @@ public class BragePublicationConverter {
 
     private Reference generateJournalArticle() throws AmbiguousDoiException, InvalidIssnException,
             ArticleNumberException, JournalIssueException, JournalVolumeException, PageRangeException,
-            MalformedURLException, InvalidPublicationContextException {
+            MalformedURLException, InvalidPublicationContextException, MissingJournalContextException {
         var instance = new JournalArticle.Builder()
                 .withArticleNumber(extractArticleNumber())
                 .withIssue(extractIssue())
@@ -555,7 +558,7 @@ public class BragePublicationConverter {
 
     private Reference generateJournalLeader() throws InvalidIssnException, MalformedURLException,
             ArticleNumberException, JournalIssueException, PageRangeException, JournalVolumeException,
-            AmbiguousDoiException, InvalidPublicationContextException {
+            AmbiguousDoiException, InvalidPublicationContextException, MissingJournalContextException {
         var instance = new JournalLeader.Builder()
                 .withArticleNumber(extractArticleNumber())
                 .withIssue(extractIssue())
@@ -567,7 +570,7 @@ public class BragePublicationConverter {
 
     private Reference generateJournalLetter() throws InvalidIssnException, MalformedURLException,
             ArticleNumberException, JournalIssueException, PageRangeException, JournalVolumeException,
-            AmbiguousDoiException, InvalidPublicationContextException {
+            AmbiguousDoiException, InvalidPublicationContextException, MissingJournalContextException {
         var instance = new JournalLetter.Builder()
                 .withArticleNumber(extractArticleNumber())
                 .withIssue(extractIssue())
@@ -579,7 +582,7 @@ public class BragePublicationConverter {
 
     private Reference generateJournalReview() throws InvalidIssnException, MalformedURLException,
             ArticleNumberException, JournalIssueException, PageRangeException, JournalVolumeException,
-            AmbiguousDoiException, InvalidPublicationContextException {
+            AmbiguousDoiException, InvalidPublicationContextException, MissingJournalContextException {
         var instance = new JournalReview.Builder()
                 .withArticleNumber(extractArticleNumber())
                 .withIssue(extractIssue())
@@ -591,7 +594,7 @@ public class BragePublicationConverter {
 
     private Reference generateJournalShortCommunication() throws InvalidIssnException, MalformedURLException,
             ArticleNumberException, JournalIssueException, PageRangeException, JournalVolumeException,
-            AmbiguousDoiException, InvalidPublicationContextException {
+            AmbiguousDoiException, InvalidPublicationContextException, MissingJournalContextException {
         var instance = new JournalShortCommunication.Builder()
                 .withArticleNumber(extractArticleNumber())
                 .withIssue(extractIssue())
@@ -602,7 +605,7 @@ public class BragePublicationConverter {
     }
 
     private Journal generateJournalContext() throws InvalidIssnException, MalformedURLException,
-            InvalidPublicationContextException {
+            InvalidPublicationContextException, MissingJournalContextException {
         var issns = extractIssns();
         PublisherInfo publisherInfo = null;
 
@@ -612,7 +615,11 @@ public class BragePublicationConverter {
 
         if (isNull(publisherInfo)) {
             var journalTitle = extractJournalTitle();
-            publisherInfo = getPublisherInfo(journalTitle);
+            try {
+                publisherInfo = getPublisherInfo(journalTitle);
+            } catch (NullPointerException e) {
+                throw new MissingJournalContextException();
+            }
         }
 
         var publicationDate = extractPublicationDate();
@@ -636,10 +643,16 @@ public class BragePublicationConverter {
     }
 
     private String extractJournalTitle() {
-        return bragePublication.getSources().stream()
-                .filter(BrageSource::isJournalTitle)
-                .map(BrageSource::getValue)
-                .collect(SingletonCollector.collectOrElse(null));
+        try {
+            return bragePublication.getSources().stream()
+                    .filter(BrageSource::isJournalTitle)
+                    .map(BrageSource::getValue)
+                    .filter(Objects::isNull)
+                    .collect(SingletonCollector.collectOrElse(null));
+        } catch (Exception e) {
+            failures.add(new Exception("Multiple journal titles were found"));
+            return null;
+        }
     }
 
     private PublisherInfo getPublisherInfo(List<String> issns) {
@@ -832,7 +845,9 @@ public class BragePublicationConverter {
         if (identifiers.size() > SINGLETON) {
             throw new IdentifierUrlException(identifiers);
         }
-        return identifiers.isEmpty() ? null : URI.create(identifiers.get(0).getValue()).toURL();
+        return identifiers.isEmpty()
+                ? null
+                : URI.create(identifiers.get(0).getValue().replace(WHITESPACE, EMPTY_STRING)).toURL();
     }
 
     private SeriesInformation extractSeriesInformation() throws SeriesTitleException,
